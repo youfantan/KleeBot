@@ -1,0 +1,12 @@
+build/
+.idea/
+build/
+native/TesseractForASOCR/
+native/ArtifactsScore/
+native/TestTesseract
+native/HardwareInfo/cmake-build-debug/
+native/HardwareInfo/cmake-build-release/
+native/HardwareInfo/.idea
+Base/.idea
+BotStatus/.idea
+Whisper/.idea

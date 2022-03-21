@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KleeBot Status</title>
+    <link rel="stylesheet" type="text/css" href="./index.css"/>
+    <link rel="stylesheet" type="text/css" href="./materialize/css/materialize.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Ubuntu&display=swap" rel="stylesheet">
+</head>
+<body>
+<div class="row">
+    <div id="licence" class="modal modal_scroll grey lighten-1">
+        <div class="modal-content">
+            <h2 class="ubuntu-font">Third Party Licence</h2>
+            <a href="https://github.com/mamoe/mirai" class="link">Mirai</a>
+            <p class="ubuntu-font" id="mirai_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/google/gson" class="link">Gson</a>
+            <p class="ubuntu-font" id="gson_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/apache/logging-log4j2" class="link">Log4j2</a>
+            <p class="ubuntu-font" id="log4j2_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/junit-team/junit" class="link">JUnit5</a>
+            <p class="ubuntu-font" id="junit5_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/opencv/opencv" class="link">OpenCV</a>
+            <p class="ubuntu-font" id="opencv_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/tesseract-ocr/tesseract" class="link">Tesseract</a>
+            <p class="ubuntu-font" id="tesseract_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/jquery/jquery" class="link">jQuery</a>
+            <p class="ubuntu-font" id="jquery_licence"></p>
+            <p class="divider"></p>
+            <a href="https://github.com/Dogfalo/materialize" class="link">Materialize</a>
+            <p class="ubuntu-font" id="materialize_licence"></p>
+        </div>
+        <div class="modal-footer grey">
+            <a class="modal-close waves-effect btn-flat">Close</a>
+        </div>
+    </div>
+    <div class="col s4">
+        <div class="card brown">
+            <div class="card-content white-text">
+                <span id="memory_usage" class="card-title ubuntu-font">Memory Usage: N/A</span>
+                <div class="progress grey">
+                    <div id="memory_usage_percent" class="determinate grey lighten-3" style="width: 0%"></div>
+                </div>
+                <div>
+                    <p id="total_memory" class="ubuntu-font">Total Memory: N/A</p>
+                    <p id="available_memory" class="ubuntu-font">Available Memory: N/A</p>
+                    <p id="used_memory" class="ubuntu-font">Used Memory: N/A</p>
+                </div>
+            </div>
+        </div>
+        <div class="card brown lighten-1">
+            <div class="card-content white-text">
+                <span id="cpu_usage" class="card-title ubuntu-font">CPU Usgae: N/A</span>
+                <div class="progress grey">
+                    <div id="cpu_usage_percent" class="determinate grey lighten-3" style="width: 0%"></div>
+                </div>
+                <div>
+                    <p id="cpu_clock_cycle" class="ubuntu-font">CPU Clock Cycle: N/A Mhz</p>
+                </div>
+            </div>
+        </div>
+        <div class="card brown lighten-2">
+            <div class="card-content white-text">
+                <span class="card-title ubuntu-font">System Information</span>
+                <div>
+                    <p id="os_name" class="ubuntu-font">OS Name: </p>
+                    <p id="cpu_name" class="ubuntu-font">CPU Name: </p>
+                    <p id="cpu_cores" class="ubuntu-font">CPU Available Cores: </p>
+                    <p id="process_id" class="ubuntu-font">Process ID: </p>
+                    <p id="java_version" class="ubuntu-font">Java Runtime Version: </p>
+                    <p id="opencv_version" class="ubuntu-font">OpenCV Version: </p>
+                    <p id="tesseract_version" class="ubuntu-font">Tesseract Version: </p>
+                </div>
+            </div>
+        </div>
+
+        <div class="card brown lighten-3">
+            <div class="card-content white-text">
+                <span class="card-title ubuntu-font">Delay</span>
+                <div>
+                    <p id="pixiv_delay" class="ubuntu-font">Delay from www.pixiv.net: </p>
+                    <p id="bilibili_delay" class="ubuntu-font">Delay from www.bilibili.com: </p>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="col s4">
+        <table class="white-text">
+            <thead>
+            <tr>
+                <th>Serial</th>
+                <th>Task Name</th>
+            </tr>
+            </thead>
+            <tbody id="task_list">
+            </tbody>
+        </table>
+    </div>
+    <div class="col s4">
+        <div class="card blue-grey darken-1">
+            <div class="card-content white-text">
+                <span class="card-title">KleeBot details</span>
+                <p id="bot_version" class="ubuntu-font">KleeBot</p>
+                <p class="divider"></p>
+                <p class="ubuntu-font">Copyright 2022 Glous.org</p>
+                <p class="divider"></p>
+                <p class="ubuntu-font">KleeBot is an opensource software.It is under AGPL Licence.For contributiong,you can make Pull Requests in the following repo.</p>
+                <p class="divider"></p>
+                <a href="#licence" class="ubuntu-font blue-text modal-trigger">Third Party Licence</a>
+            </div>
+            <div class="card-action">
+                <a class="waves-effect waves-light btn blue-grey lighten-2">Github Repository</a>
+                <a class="waves-effect waves-light btn blue-grey lighten-2">See Help Docs</a>
+            </div>
+        </div>
+    </div>
+</div>
+<script src="jquery-3.6.0.min.js"></script>
+<script src="materialize/js/materialize.min.js"></script>
+<script type="text/javascript">
+    $(document).ready(function () {
+        M.AutoInit()
+        setInterval(function () {
+            $.get("/services/getHardwareInfo",function (data, status) {
+                console.log(data)
+                var object=data;
+                $('#cpu_name').text("CPU Name: "+object.CpuModelInfo)
+                $('#cpu_usage').text("CPU Usage: "+object.CpuUsageInfo+" %")
+                $('#cpu_clock_cycle').text("CPU Clock Circle: "+object.CpuClockCycleInfo+" Mhz")
+                $('#cpu_cores').text("CPU Available Cores: "+object.CpuAvailableCoresInfo)
+                $('#memory_usage').text("Memory Usage : "+object.UsedPercentInfo+" %")
+                $('#total_memory').text("Total Memory: "+object.TotalMemoryInfo+" Mb")
+                $('#available_memory').text("Available Memory: "+object.AvailableMemoryInfo+" Mb")
+                $('#used_memory').text("Used Memory: "+object.UsedMemoryInfo+" Mb")
+                $('#process_id').text("Process ID: "+object.ProcessIDInfo)
+                $('#os_name').text("OS Name: "+object.OS)
+                $('#java_version').text("Java Runtime Version: "+object.JreVersion)
+                $('#opencv_version').text("OpenCV Version: "+object.OpenCVVersion)
+                $('#tesseract_version').text("Tesseract Version: "+object.TesseractVersion)
+                $('#pixiv_delay').text("Delay from www.pixiv.net: "+object.PixivDelay+" ms")
+                $('#bilibili_delay').text("Delay from www.bilibili.com: "+object.BiliBiliDelay+" ms")
+                $('#cpu_usage_percent').css("width",object.CpuUsageInfo+"%")
+                $('#memory_usage_percent').css("width",object.UsedPercentInfo+"%")
+                $('#task_list').empty()
+                for (let i in object.Tasks) {
+                    $('#task_list').append("<tr><td>"+i+"</td><td>"+object.Tasks[i]+"</td></tr>")
+                }
+                $('#bot_version').text(object.KleeBotVersion)
+            })
+        },1000)
+        $.get("https://cdn.jsdelivr.net/gh/mamoe/mirai@2.10.0/LICENSE",function (data, status) {
+            console.log(data)
+            $('#mirai_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/google/gson@1.2.3/LICENSE",function (data, status) {
+            $('#gson_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/apache/logging-log4j2@master/LICENSE.txt",function (data, status) {
+            $('#log4j2_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/junit-team/junit5@master/LICENSE.md",function (data, status) {
+            $('#junit5_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/jquery/jquery@3.6.0/LICENSE.txt",function (data, status) {
+            $('#jqeuery_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/opencv/opencv@4.5.5/LICENSE",function (data, status) {
+            $('#opencv_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/tesseract-ocr/tesseract@5.0.1/LICENSE",function (data, status) {
+            $('#tesseract_licence').text(data)
+        })
+        $.get("https://cdn.jsdelivr.net/gh/Dogfalo/materialize@1.0.0/LICENSE",function (data, status) {
+            $('#materialize_licence').text(data)
+        })
+    })
+</script>
+</body>
+</html>

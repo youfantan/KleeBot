@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html class="dark" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="UTF-8">
+    <title>Whisper</title>
+    <link rel="stylesheet" href="https://unpkg.com/papercss@1.8.3/dist/paper.min.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/crypto-js/4.1.1/crypto-js.min.js" integrity="sha512-E8QSvWZ0eCLGk4km3hxSsNmGWbLtSCSUcewDQPQWZF6pEU8GlT8a5fF32wOl1i8ftdMhssTrF/OhyGWwonTcXA==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" referrerpolicy="no-referrer"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/showdown/2.0.3/showdown.min.js"></script>
+    <style type="text/css">
+        body{
+            background: #41403e;
+        }
+        .loader {
+            display: inline-block;
+            position: relative;
+            top: 50%;
+            left: 50%;
+            transform:translate(-50%,-50%);
+            visibility: hidden;
+        }
+        svg path,
+        svg rect {
+            fill: #b3b0aa;
+        }
+    </style>
+</head>
+<body>
+<div class="paper container">
+    <div class="row flex-spaces tabs">
+        <input id="tab1" type="radio" name="tabs" checked>
+        <label for="tab1">Make Whispers</label>
+        <input id="tab2" type="radio" name="tabs">
+        <label for="tab2">Read Whispers</label>
+        <div class="content" id="content1">
+            <h3>Make Whispers❤️</h3>
+            <fieldset class="form-group">
+                <label for="paperRadios1" class="paper-radio">
+                    <input type="radio" name="paperRadios" id="paperRadios1" onclick="changeToImage()" value="option 1"> <span>Use Image</span>
+                </label>
+                <label for="paperRadios2" class="paper-radio">
+                    <input type="radio" name="paperRadios" id="paperRadios2" onclick="changeToText()" value="option 2" checked> <span>Use Text</span>
+                </label>
+            </fieldset>
+            <label for="whispers">write what you want to say here</label>
+            <textarea id="whispers" placeholder="message"></textarea>
+            <p>or upload image</p>
+            <button onclick="readFile()">Upload Image</button>
+            <button onclick="doEncrypt()">Make It!</button>
+            <div class="form-group">
+                <label for="secrets">secret keys</label>
+                <textarea type="text" placeholder="whispers" id="secrets"></textarea>
+            </div>
+            <button onclick="function copyToClipBoard() {
+                document.getElementById('secrets').select();
+                document.execCommand('Copy')
+                alert('copied successful')
+            }
+            copyToClipBoard()">copy to the clip board</button>
+        </div>
+        <div class="content" id="content2">
+            <h3>Read Whispers❤️</h3>
+            <div class="form-group">
+                <label for="whispers">write the secret keys here</label>
+                <textarea placeholder="whispers" style="color: transparent;
+text-shadow:2px 2px 8px #ffffff; word-break: break-word" id="write_secret_words"></textarea>
+            </div>
+            <button onclick="doDecrypt()">Get it!</button>
+            <div class="container-xs">
+                <div id="loader" class="loader">
+                    <svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+                         width="40px" height="40px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+  <path fill="#000" d="M43.935,25.145c0-10.318-8.364-18.683-18.683-18.683c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615c8.072,0,14.615,6.543,14.615,14.615H43.935z">
+    <animateTransform attributeType="xml"
+                      attributeName="transform"
+                      type="rotate"
+                      from="0 25 25"
+                      to="360 25 25"
+                      dur="0.6s"
+                      repeatCount="indefinite"/>
+    </path>
+  </svg>
+                </div>
+                <p id="decrypted_text"></p>
+                <img style="visibility: hidden" id="decrypted_image">
+            </div>
+        </div>
+        </div>
+
+    </div>
+</div>
+
+<script type="text/javascript">
+    const key='e348da05aa56fe0a';
+    const iv='ea412a61f9cd59a4'
+    const privateKey='-----BEGIN RSA PRIVATE KEY-----\n' +
+        'MIICXAIBAAKBgQDIWDRTGnYCfJXyUlSGvt0+ConVlOosGBUZodR99WGnRujU/AWV\n' +
+        'q8DTEpiXueHen3wTBhkgDOoX0MPJH4NJMP5MMNQBHvAwFkqrp+vkeDLtXiHGbHO1\n' +
+        'eJVwYnHQ0ciouzsoGW19npCw3BNGyNEKEFHJzI380Z3Uy4achY4Z/YLzOwIDAQAB\n' +
+        'AoGAY3h/yj8aFpP68wxzkU9Uk8gxtUyxk+EFIOvbkAp0SNSJJ65Vq4FSRLo37yVI\n' +
+        'gvsWZG+jq+kdlWN+we4WhhGAQD0UNfnNyDGi5S6WtySs6zR1Jwtb8hxTfAsHjOZF\n' +
+        'tIfeBotz3obIsZE8on3AMFmG2tcM1T3vX2B+yxtTOHu02RkCQQDm73XE+7+CH4fk\n' +
+        'ovIdG7AFu5ljf86n9GdNPY35hOpOotl5ECjwLPJmVdTF/nm6m6M8s7wD6nWcG5Pr\n' +
+        '/vrMSsJnAkEA3hbHHNeW+AOXXyYAX2LMxDxjRPVGVPidBttoBSDMTEVdadz/IASX\n' +
+        'hjiGwSm8Fo7BWPa1IEXep7vyJynOUKvMDQJARR1Zo9CsaidBpn3V9Dw7HBwfNhYk\n' +
+        'JUQSPp2zhf/vmAVJDOB3QBpTmakKew9EI0M9QYeRN6LN/CCMzs6LBOVC9QJBALZ2\n' +
+        '2Fgl+G8D5FXUDvJPZhTD2HtLWOFu8PQ1Rx0PeUogo0LawvE3VJZ90pjZBSMzXj8N\n' +
+        'UnqVbP06ORVcD5nPy/ECQHe0JsptKRrF3zqS7vOUGyGgMvhoM4nzXQpZPzd4g3BB\n' +
+        'jIQOgQ8gtXczwwi5IewkzZ2d8R9z2nvGf55jsmLZBA8=\n' +
+        '-----END RSA PRIVATE KEY-----\n'
+    const publicKey='-----BEGIN PUBLIC KEY-----\n' +
+        'MIGfMA0GCSqGSIb3DQEBAQUAA4GNADCBiQKBgQDIWDRTGnYCfJXyUlSGvt0+ConV\n' +
+        'lOosGBUZodR99WGnRujU/AWVq8DTEpiXueHen3wTBhkgDOoX0MPJH4NJMP5MMNQB\n' +
+        'HvAwFkqrp+vkeDLtXiHGbHO1eJVwYnHQ0ciouzsoGW19npCw3BNGyNEKEFHJzI38\n' +
+        '0Z3Uy4achY4Z/YLzOwIDAQAB\n' +
+        '-----END PUBLIC KEY-----\n'
+    let text;
+    let method;
+    const AESKey=CryptoJS.enc.Utf8.parse(key);
+    const AESIV=CryptoJS.enc.Utf8.parse(iv)
+    function AESEncrypt(src) {
+        let AESSrc=CryptoJS.enc.Utf8.parse(src)
+        let AESEncrypted=CryptoJS.AES.encrypt(AESSrc,AESKey,{
+            iv:AESIV,
+            mode:CryptoJS.mode.CBC,
+            padding:CryptoJS.pad.Pkcs7
+        })
+        return AESEncrypted.ciphertext.toString();
+    }
+    function AESDecrypt(src){
+        let AESHex=CryptoJS.enc.Hex.parse(src);
+        let AESSrc=CryptoJS.enc.Base64.stringify(AESHex);
+        let AESDecrypted=CryptoJS.AES.decrypt(AESSrc,AESKey,{
+            iv:AESIV,
+            mode:CryptoJS.mode.CBC,
+            padding:CryptoJS.pad.Pkcs7
+        });
+        let StrDecrypted=CryptoJS.enc.Utf8.stringify(AESDecrypted)
+        return StrDecrypted.toString();
+    }
+    function encrypt(src) {
+        let encoder=new JSEncrypt();
+        encoder.setPublicKey(publicKey);
+        encoder.setPrivateKey(privateKey);
+        let size=src.length/117;
+        let full='';
+        for (let i = 0; i < size; i++) {
+            let index1=i*117;
+            let index2=(i+1)*117;
+            if (index2>src.length){
+                index2=src.length;
+            }
+            let slicedStr=src.slice(index1,index2);
+            full+=encoder.encrypt(slicedStr);
+            full+=',';
+        }
+        full=full.slice(0,full.length-1);
+        return full;
+    }
+    function decrypt(src) {
+        let decoder=new JSEncrypt();
+        decoder.setPublicKey(publicKey);
+        decoder.setPrivateKey(privateKey);
+        let clips = src.toString().split(',');
+        let full='';
+        for (let i = 0; i < clips.length; i++) {
+            full+=decoder.decrypt(clips[i]);
+        }
+        return full;
+    }
+
+    function readFile() {
+        let input=document.createElement('input');
+        input.type='file';
+        input.click();
+        input.onchange=function () {
+            let file=input.files[0];
+            console.log(file.toString())
+            let reader = new FileReader();
+            let image;
+            console.log('test')
+            reader.onload = function (evt) {
+                image = evt.target.result;
+                text=image;
+            }
+            reader.readAsDataURL(file)
+        }
+
+    }
+    function changeToText() {
+        method='text';
+    }
+    function changeToImage() {
+        method='image';
+    }
+    const worker=new Worker('./cryptWorker.js')
+    function doEncrypt() {
+        let req=new XMLHttpRequest();
+        req.open('POST','/services/storeWhisper',true);
+        if (method==='image'){
+            text=AESEncrypt("image;"+text)
+        } else{
+            text=AESEncrypt("text;"+$('#whispers').val());
+        }
+        console.log(text)
+        req.send(text);
+        req.onreadystatechange=function (e) {
+            if (req.readyState===4){
+                let obj=req.responseText;
+                console.log(obj)
+                obj=JSON.parse(obj)
+                if (obj.status==='ok'){
+                    $('#secrets').text(obj.uuid)
+                } else {
+                    alert(obj.status+":"+obj.message)
+                }
+            }
+        }
+    }
+    function doDecrypt() {
+        document.getElementById('loader').style.visibility = 'visible'
+        let req=new XMLHttpRequest();
+        req.open('GET','/services/getWhisper:'+$('#write_secret_words').val(),true);
+        req.send();
+        req.onreadystatechange=function (e) {
+            if (req.readyState===4){
+                let obj=JSON.parse(req.responseText);
+                if (obj.status==='ok'){
+                    let text=obj.body;
+                    console.log(text)
+                    worker.postMessage(text);
+                    worker.onmessage=function (msg) {
+                        let decrypted_text=msg.data;
+                        console.log(decrypted_text)
+                        if (decrypted_text.startsWith('text;')){
+                            $('#decrypted_text').text(decrypted_text.slice(5))
+                        } else if (decrypted_text.startsWith('image;')){
+                            $('#decrypted_image').attr('src',decrypted_text.slice(6))
+                            document.getElementById('decrypted_image').style.visibility='visible'
+                        }
+                        document.getElementById('loader').style.visibility='hidden'
+                    }
+                } else {
+                    alert(obj.status+":"+obj.message)
+                }
+
+            }
+        }
+    }
+</script>
+</body>
+</html>

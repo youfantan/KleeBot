@@ -1,0 +1,28 @@
+html{
+    background-color: #212121;
+}
+.ubuntu-font{
+    font-family: 'Ubuntu', sans-serif;
+}
+.modal_scroll {
+    max-height: 378px;
+    height: 378px;
+    overflow-y: auto;
+}
+.modal_scroll::-webkit-scrollbar {
+    width: 5px;
+    height: 1px;
+}
+.modal_scroll::-webkit-scrollbar-thumb {
+    border-radius: 5px;
+    background: #212121;
+}
+.modal_scroll::-webkit-scrollbar-track {
+    border-radius: 10px;
+    background: #bdbdbd;
+}
+.link{
+    font-family: 'Ubuntu', sans-serif;
+    font-size: 30px;
+    color: #424242;
+}
