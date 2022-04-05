@@ -139,4 +139,13 @@ public class AbyssInfo implements Serializable {
     private String max_energy_skill_avatar;
     private int status;
     private String errorMsg;
+    private AbyssFloor[] floors;
+
+    public AbyssFloor[] getFloors() {
+        return floors;
+    }
+
+    public void setFloors(AbyssFloor[] floors) {
+        this.floors = floors;
+    }
 }

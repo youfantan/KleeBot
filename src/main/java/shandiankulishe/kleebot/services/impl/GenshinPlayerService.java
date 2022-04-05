@@ -9,41 +9,43 @@ import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.features.builtin.PlayerInfo;
 import shandiankulishe.kleebot.features.builtin.Role;
 import shandiankulishe.kleebot.features.builtin.World;
-import shandiankulishe.kleebot.features.genshin.GenshinPlayerAPI;
+import shandiankulishe.kleebot.features.genshin.GenshinAPI;
 import shandiankulishe.kleebot.services.GroupService;
 import shandiankulishe.kleebot.utils.FileUtils;
 import shandiankulishe.kleebot.utils.StringUtils;
 
+import java.awt.*;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.nio.charset.StandardCharsets;
+import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
 
-public class GenshinPlayerService implements GroupService {
+public class GenshinPlayerService extends GroupService {
     @Override
     public boolean process(GroupMessageEvent event) {
-        return event.getMessage().serializeToMiraiCode().startsWith(new At(KleeBot.config.getBotAccount())+" gsearch");
+        return event.getMessage().serializeToMiraiCode().startsWith(new At(KleeBot.config.getBotAccount())+" gsearch ");
     }
 
     @Override
-    public void execute(GroupMessageEvent event) {
+    public boolean execute(GroupMessageEvent event) throws IOException, FontFormatException, NoSuchAlgorithmException {
         String rawMessage=event.getMessage().serializeToMiraiCode();
         String uid=rawMessage.substring(rawMessage.indexOf("gsearch")+8);
         if ((uid=StringUtils.findDigit(uid))!=null){
             String cookie= FileUtils.readFile(KleeBot.config.getCookieFile(), StandardCharsets.UTF_8);
             if (cookie==null){
                 sendErrorMessage(event,"米游社cookie文件不存在，请联系bot管理员修复。");
-                return;
+                return false;
             }
-            GenshinPlayerAPI api=new GenshinPlayerAPI(cookie);
+            GenshinAPI api=new GenshinAPI(cookie);
             PlayerInfo info;
             if (rawMessage.endsWith("CN")){
-                info=api.getPlayerInfo(GenshinPlayerAPI.GENSHIN_CHINA,uid);
+                info=api.getPlayerInfo(GenshinAPI.GENSHIN_CHINA,uid);
             } else if (rawMessage.endsWith("CN_B")){
-                info=api.getPlayerInfo(GenshinPlayerAPI.GENSHIN_CHINA_BILIBILI,uid);
+                info=api.getPlayerInfo(GenshinAPI.GENSHIN_CHINA_BILIBILI,uid);
             } else{
-                info=api.getPlayerInfo(GenshinPlayerAPI.GENSHIN_CHINA,uid);
+                info=api.getPlayerInfo(GenshinAPI.GENSHIN_CHINA,uid);
             }
             if (info.getStatus()==0) {
                 if (rawMessage.contains("img")){
@@ -54,11 +56,7 @@ public class GenshinPlayerService implements GroupService {
                     builder.append(new At(event.getSender().getId()));
                     builder.append(image);
                     event.getGroup().sendMessage(builder.build());
-                    try {
-                        resource.close();
-                    } catch (IOException e) {
-                        e.printStackTrace();
-                    }
+                    resource.close();
                 } else {
                     MessageChainBuilder builder=new MessageChainBuilder();
                     builder.append(new At(event.getSender().getId()));
@@ -116,8 +114,10 @@ public class GenshinPlayerService implements GroupService {
                 }
             } else{
                 sendErrorMessage(event,"发生错误，错误信息:%s".formatted(info.getErrorMsg()));
+                return false;
             }
         }
+        return true;
     }
     private void sendErrorMessage(GroupMessageEvent event,String errorMessage){
         MessageChainBuilder builder=new MessageChainBuilder();

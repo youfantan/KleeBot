@@ -1,16 +1,14 @@
 package shandiankulishe.kleebot.web;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.async.AsyncTaskQueue;
+import shandiankulishe.kleebot.log.Logger;
 import shandiankulishe.kleebot.utils.FileUtils;
 import shandiankulishe.kleebot.utils.ZipUtils;
 
 import java.io.*;
 import java.net.ServerSocket;
 import java.net.Socket;
-import java.net.SocketException;
 import java.nio.charset.StandardCharsets;
 import java.util.HashMap;
 
@@ -19,7 +17,7 @@ public class HttpServer {
     private boolean flag=true;
     private AsyncTaskQueue queue;
     private String resourcePackName;
-    private Logger logger= LogManager.getLogger(HttpServer.class);
+    private Logger logger= Logger.getLogger(HttpServer.class);
     public HttpServer(AsyncTaskQueue queue,int port){
         this.port=port;
         this.queue=queue;
@@ -140,7 +138,6 @@ public class HttpServer {
                 }
             } catch (Exception e){
                 e.printStackTrace();
-                logger.error(e);
             }
 
     }

@@ -1,7 +1,6 @@
 package shandiankulishe.kleebot.async;
 
 import java.util.Objects;
-import java.util.UUID;
 
 public class Task {
     @Override
@@ -33,6 +32,6 @@ public class Task {
     private BaseFunction func;
     private String name;
     public String getFullName(){
-        return name+"@"+ UUID.randomUUID();
+        return name+"@"+ func.hashCode();
     }
 }

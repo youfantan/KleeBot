@@ -2,11 +2,7 @@ package shandiankulishe.kleebot.tests;
 
 import org.junit.jupiter.api.Test;
 import shandiankulishe.kleebot.async.AsyncTaskQueue;
-import shandiankulishe.kleebot.async.Task;
-import shandiankulishe.kleebot.async.Timer;
 import shandiankulishe.kleebot.services.api.HardwareInfo;
-
-import java.io.File;
 import java.util.List;
 
 public class TaskQueueTest {
@@ -53,13 +49,5 @@ public class TaskQueueTest {
                 ProcessID: %d
                 """.formatted(HardwareInfo.getInstance().getCpuModelInfo(),HardwareInfo.getInstance().getCpuClockCycleInfo(),HardwareInfo.getInstance().getCpuUsageInfo()*100,HardwareInfo.getInstance().getCpuAvailableCoresInfo(),HardwareInfo.getInstance().getTotalMemoryInfo(),HardwareInfo.getInstance().getAvailableMemoryInfo(),HardwareInfo.getInstance().getProcessIDInfo());
         System.out.println(info);
-    }
-    @Test
-    public void HardwareInfoTest() throws InterruptedException {
-        Timer.start();
-        System.load(new File("bin\\libHardwareInfo.dll").getAbsolutePath());
-        HardwareInfo.init();
-        Timer.registerScheduledTask(new Task(TaskQueueTest::TestGetInfo,TaskQueueTest.class.getName()),Timer.SECOND);
-        Thread.sleep(10000);
     }
 }

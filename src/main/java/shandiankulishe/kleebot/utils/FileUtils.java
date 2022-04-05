@@ -1,7 +1,5 @@
 package shandiankulishe.kleebot.utils;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
@@ -16,30 +14,24 @@ import java.security.cert.X509Certificate;
 import java.util.HashMap;
 
 public class FileUtils {
-    private static Logger logger = LogManager.getLogger(FileUtils.class);
     private static int DEBUG_PORT;
     public static void enableDebug(int port){
         DEBUG_PORT=port;
     }
-    public static byte[] readFile(String fileName) {
-        try {
-            BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
-            ByteArrayOutputStream out = new ByteArrayOutputStream();
-            int bytesRead;
-            byte[] buffer = new byte[1024];
-            while ((bytesRead = in.read(buffer)) != -1) {
-                out.write(buffer, 0, bytesRead);
-            }
-            out.close();
-            in.close();
-            return out.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return null;
+    public static byte[] readFile(String fileName) throws IOException {
+        BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int bytesRead;
+        byte[] buffer = new byte[1024];
+        while ((bytesRead = in.read(buffer)) != -1) {
+            out.write(buffer, 0, bytesRead);
         }
+        out.close();
+        in.close();
+        return out.toByteArray();
     }
 
-    public static String readFile(String fileName, Charset charset) {
+    public static String readFile(String fileName, Charset charset) throws IOException {
         byte[] bytes = readFile(fileName);
         if (bytes == null) {
             return null;
@@ -47,18 +39,14 @@ public class FileUtils {
         return new String(bytes, charset);
     }
 
-    public static void writeFile(String fileName, byte[] content) {
-        try {
-            BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
-            out.write(content);
-            out.flush();
-            out.close();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void writeFile(String fileName, byte[] content) throws IOException {
+        BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(fileName));
+        out.write(content);
+        out.flush();
+        out.close();
     }
 
-    public static void writeFile(String fileName, String content) {
+    public static void writeFile(String fileName, String content) throws IOException {
         writeFile(fileName, content.getBytes(StandardCharsets.UTF_8));
     }
 
@@ -91,16 +79,15 @@ public class FileUtils {
             in.close();
             out.close();
             return out.toByteArray();
-        } catch (IOException e) {
-            e.printStackTrace();
+        } catch (Exception ignored){
             return null;
         }
     }
 
-    public static byte[] download(String _url) {
+    public static byte[] download(String _url) throws IOException {
         return download(_url, null,null);
     }
-    public static byte[] download(String _url,Proxy proxy){
+    public static byte[] download(String _url,Proxy proxy) throws IOException {
         return download(_url,proxy,null);
     }
     private static void trustAllHosts() {

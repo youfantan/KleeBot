@@ -17,18 +17,38 @@ import shandiankulishe.kleebot.services.builtin.BilibiliVideoInf;
 import shandiankulishe.kleebot.utils.FileUtils;
 import shandiankulishe.kleebot.utils.StringUtils;
 
+import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 
-public class BilibiliService implements GroupService {
+public class BilibiliService extends GroupService {
     @Override
     public boolean process(GroupMessageEvent event) {
-        return event.getMessage().serializeToMiraiCode().contains("bilibili.com");
+        return event.getMessage().serializeToMiraiCode().contains("bilibili.com")||event.getMessage().serializeToMiraiCode().contains("b23.tv");
     }
 
     @Override
-    public void execute(GroupMessageEvent event) {
+    public boolean execute(GroupMessageEvent event) throws IOException {
         String rawMessage=event.getMessage().serializeToMiraiCode();
         if (rawMessage.startsWith(new At(KleeBot.config.getBotAccount())+" bilibili")){
+            String rawUrl=rawMessage.substring(rawMessage.indexOf("bilibili.com"));
+            if (rawUrl.contains("BV")){
+                String bvid=getBVid(rawUrl);
+                if (bvid!=null){
+                    String cid=getCid(bvid);
+                    String aid=getAid(cid,bvid);
+                    sendVideoInformation(event,getVideoInformation(aid));
+                } else{
+                    return false;
+                }
+            } else if (rawUrl.contains("av")){
+                String aid= StringUtils.findDigit(rawUrl);
+                if (aid!=null){
+                    sendVideoInformation(event,getVideoInformation(aid));
+                } else{
+                    return false;
+                }
+            }
+            return true;
         } else if (rawMessage.contains("bilibili.com")){
             String rawUrl=rawMessage.substring(rawMessage.indexOf("bilibili.com"));
             if (rawUrl.contains("BV")){
@@ -44,17 +64,9 @@ public class BilibiliService implements GroupService {
                     sendVideoInformation(event,getVideoInformation(aid));
                 }
             }
+            return true;
         }
-    }
-    private void sendError(GroupMessageEvent event,String rawUrl){
-        MessageChainBuilder builder=new MessageChainBuilder();
-        builder.append(new At(event.getSender().getId()));
-        builder.append(
-                """
-                        未识别URL: %s
-                        """.formatted(rawUrl)
-        );
-        event.getGroup().sendMessage(builder.build());
+        return true;
     }
     private void sendVideoInformation(GroupMessageEvent event,BilibiliVideoInf inf){
         MessageChainBuilder builder=new MessageChainBuilder();
@@ -79,17 +91,17 @@ public class BilibiliService implements GroupService {
         }
         return rawUrl.substring(rawUrl.indexOf("BV"),rawUrl.indexOf("BV")+12);
     }
-    private String getCid(String BVid){
+    private String getCid(String BVid) throws IOException {
         String playerList= new String(FileUtils.download(References.BILBILI_PLAYER_LIST_URL.formatted(BVid)), StandardCharsets.UTF_8);
         JsonObject object=JsonParser.parseString(playerList).getAsJsonObject();
         return String.valueOf(object.getAsJsonArray("data").get(0).getAsJsonObject().get("cid").getAsLong());
     }
-    private String getAid(String Cid,String BVid){
+    private String getAid(String Cid,String BVid) throws IOException {
         String webInterface=new String(FileUtils.download(References.BILBILI_WEB_INTERFACE_BVID_URL.formatted(Cid,BVid)),StandardCharsets.UTF_8);
         JsonObject object=JsonParser.parseString(webInterface).getAsJsonObject();
         return String.valueOf(object.getAsJsonObject("data").get("aid").getAsLong());
     }
-    private BilibiliVideoInf getVideoInformation(String Aid){
+    private BilibiliVideoInf getVideoInformation(String Aid) throws IOException {
         byte[] formattedInf;
         Gson gson=new Gson();
         if ((formattedInf=CacheFactory.getCache(Aid))!=null){
@@ -107,7 +119,7 @@ public class BilibiliService implements GroupService {
             String url="https://www.bilibili.com/video/"+data.get("bvid").getAsString();
             BilibiliVideoInf inf=new BilibiliVideoInf(cover,title,author,url);
             formattedInf=gson.toJson(inf).getBytes(StandardCharsets.UTF_8);
-            CacheFactory.restoreCache(Aid,formattedInf,Timer.NO_LIMIT);
+            CacheFactory.storeCache(Aid,formattedInf,Timer.NO_LIMIT);
             return inf;
         }
     }

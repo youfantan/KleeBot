@@ -1,17 +1,14 @@
 package shandiankulishe.kleebot.utils;
 
 import java.util.Vector;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class StringUtils {
     public static boolean isDigit(String str){
-        if (str==null){
-            return false;
-        }
-        for (char c:str.toCharArray()){
-            if (!Character.isDigit(c))
-                return false;
-        }
-        return true;
+        Pattern pattern=Pattern.compile("^-?\\d+(\\.\\d+)?$");
+        Matcher isNum=pattern.matcher(str);
+        return isNum.matches();
     }
     public static String findDigit(String str){
         if (str==null){

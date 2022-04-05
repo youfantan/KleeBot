@@ -1,10 +1,8 @@
 package shandiankulishe.kleebot.async;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import shandiankulishe.kleebot.log.Logger;
 
 public class AsyncTask implements Runnable{
-    private Logger logger= LogManager.getLogger(AsyncTask.class);
+    private Logger logger= Logger.getLogger(AsyncTask.class);
     private int state=0;
     private Task task;
     public AsyncTask(Task task){

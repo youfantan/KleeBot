@@ -1,7 +1,6 @@
 package shandiankulishe.kleebot.async;
 
 import shandiankulishe.kleebot.KleeBot;
-
 import java.util.HashMap;
 
 public class Timer {

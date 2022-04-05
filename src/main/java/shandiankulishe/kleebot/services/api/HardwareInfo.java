@@ -1,10 +1,8 @@
 package shandiankulishe.kleebot.services.api;
 
-import com.google.gson.JsonObject;
 import com.google.gson.stream.JsonWriter;
 import shandiankulishe.kleebot.GlobalVars;
 import shandiankulishe.kleebot.KleeBot;
-import shandiankulishe.kleebot.async.AsyncTaskQueue;
 import shandiankulishe.kleebot.async.Task;
 import shandiankulishe.kleebot.async.Timer;
 import shandiankulishe.kleebot.services.impl.CoreService;

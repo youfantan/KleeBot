@@ -1,18 +1,16 @@
 package shandiankulishe.kleebot.services;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import shandiankulishe.kleebot.log.Logger;
 
-public interface Service {
-    default String getServiceName(){
+public abstract class Service {
+    protected Logger logger=Logger.getLogger(this.getClass());
+    public String getServiceName(){
         return this.getClass().getName();
     }
-    default void initialize(){
-        Logger logger= LogManager.getLogger(this.getClass());
+    public void initialize(){
         logger.info(this.getClass().getName()+" initialized by default");
     }
-    default void stop(){
-        Logger logger= LogManager.getLogger(this.getClass());
+    public void stop(){
         logger.info(this.getClass().getName()+" stopped by default");
     }
 }

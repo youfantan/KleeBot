@@ -8,6 +8,7 @@ import shandiankulishe.kleebot.async.Timer;
 import shandiankulishe.kleebot.cache.CacheFactory;
 import shandiankulishe.kleebot.utils.FileUtils;
 
+import java.io.IOException;
 import java.net.InetSocketAddress;
 import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
@@ -18,7 +19,7 @@ public class PixivAPI {
     public PixivAPI(String proxyHost,int proxyPort){
         this.proxy=new Proxy(Proxy.Type.HTTP,new InetSocketAddress(proxyHost,proxyPort));
     }
-    public byte[] getImage(String url){
+    public byte[] getImage(String url) throws IOException {
         HashMap<String,String> headers=new HashMap<>();
         headers.put("referer","http://www.pixiv.net");
         headers.put("user-agent","Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/98.0.4758.102 Safari/537.36");
@@ -27,7 +28,7 @@ public class PixivAPI {
             return cache;
         } else {
             byte[] content=FileUtils.download(url,proxy,headers);
-            CacheFactory.restoreCache(url,content, Timer.NO_LIMIT);
+            CacheFactory.storeCache(url,content, Timer.NO_LIMIT);
             return content;
         }
     }
@@ -47,7 +48,7 @@ public class PixivAPI {
                 return null;
             }
             retApi=new String(api,StandardCharsets.UTF_8);
-            CacheFactory.restoreCache("illust:"+illustid,retApi.getBytes(StandardCharsets.UTF_8),Timer.NO_LIMIT);
+            CacheFactory.storeCache("illust:"+illustid,retApi.getBytes(StandardCharsets.UTF_8),Timer.NO_LIMIT);
         }
         JsonObject object=JsonParser.parseString(retApi).getAsJsonObject();
         JsonObject body=object.get("body").getAsJsonObject();
@@ -61,16 +62,16 @@ public class PixivAPI {
         artwork.put("date",body.get("uploadDate").getAsString());
         return artwork;
     }
-    public HashMap<Integer,HashMap<String,String>> getDailyRanking(){
+    public HashMap<Integer,HashMap<String,String>> getDailyRanking() throws IOException {
         return getRanking(References.PIXIV_RANKING_DAILY);
     }
-    public HashMap<Integer,HashMap<String,String>> getWeeklyRanking(){
+    public HashMap<Integer,HashMap<String,String>> getWeeklyRanking() throws IOException {
         return getRanking(References.PIXIV_RANKING_WEEKLY);
     }
-    public HashMap<Integer,HashMap<String,String>> getMonthlyRanking(){
+    public HashMap<Integer,HashMap<String,String>> getMonthlyRanking() throws IOException {
         return getRanking(References.PIXIV_RANKING_MONTHLY);
     }
-    public HashMap<Integer,HashMap<String,String>> getRanking(String url){
+    public HashMap<Integer,HashMap<String,String>> getRanking(String url) throws IOException {
         HashMap<Integer,HashMap<String,String>> result=new HashMap<>();
         String retApi;
         byte[] cacheContent;
@@ -78,7 +79,7 @@ public class PixivAPI {
             retApi=new String(cacheContent,StandardCharsets.UTF_8);
         } else{
             retApi= new String(FileUtils.download(url,proxy), StandardCharsets.UTF_8);
-            CacheFactory.restoreCache(url,retApi.getBytes(StandardCharsets.UTF_8), Timer.HOUR*2);
+            CacheFactory.storeCache(url,retApi.getBytes(StandardCharsets.UTF_8), Timer.HOUR*2);
         }
         JsonObject object=JsonParser.parseString(retApi).getAsJsonObject();
         JsonArray array=object.get("contents").getAsJsonArray();

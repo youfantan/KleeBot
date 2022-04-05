@@ -5,9 +5,10 @@ import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.cache.CacheFactory;
 import shandiankulishe.kleebot.commands.CommandRegistry;
 import shandiankulishe.kleebot.commands.ICommandExecutor;
+import shandiankulishe.kleebot.http.ChromeInstance;
+import shandiankulishe.kleebot.log.Logger;
 import shandiankulishe.kleebot.services.ServiceRegistry;
 
-import java.io.File;
 import java.io.IOException;
 
 public class StopCommand implements ICommandExecutor {
@@ -21,10 +22,15 @@ public class StopCommand implements ICommandExecutor {
         try {
             ServiceRegistry.stop();
             KleeBot.getServerInstance().stop();
+            KleeBot.botInstance.close();
             GlobalVars.getQueue().stop();
             KleeBot.stop();
             CommandRegistry.stop();
             CacheFactory.serializeCaches();
+            ChromeInstance.stop();
+            KleeBot.configurationInstance.mergeClass(KleeBot.config);
+            KleeBot.configurationInstance.saveToFile();
+            Logger.stop();
         } catch (IOException e) {
             e.printStackTrace();
         }

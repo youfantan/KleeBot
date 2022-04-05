@@ -1,22 +1,7 @@
 package shandiankulishe.kleebot;
 
+
 public class BotConfig {
-    public long[] getEnableGroups() {
-        return EnableGroups;
-    }
-
-    public int getQueueSize() {
-        return QueueSize;
-    }
-
-    public long getBotAccount() {
-        return BotAccount;
-    }
-
-    public String getBotPassword() {
-        return BotPassword;
-    }
-
     public String getProxyHost() {
         return ProxyHost;
     }
@@ -29,12 +14,33 @@ public class BotConfig {
         return ProxyPort;
     }
 
-    private String ProxyHost;
-    private int ProxyPort;
-    private long[] EnableGroups;
-    private int QueueSize;
-    private long BotAccount;
-    private String BotPassword;
+    public void setProxyPort(int proxyPort) {
+        ProxyPort = proxyPort;
+    }
+
+    public int getQueueSize() {
+        return QueueSize;
+    }
+
+    public void setQueueSize(int queueSize) {
+        QueueSize = queueSize;
+    }
+
+    public long getBotAccount() {
+        return BotAccount;
+    }
+
+    public void setBotAccount(long botAccount) {
+        BotAccount = botAccount;
+    }
+
+    public String getBotPassword() {
+        return BotPassword;
+    }
+
+    public void setBotPassword(String botPassword) {
+        BotPassword = botPassword;
+    }
 
     public String getCacheDir() {
         return CacheDir;
@@ -44,26 +50,13 @@ public class BotConfig {
         CacheDir = cacheDir;
     }
 
-    private String CacheDir;
-    public String getResourcePackFileDir() {
-        return ResourcePackFileDir;
+    public int getServicePort() {
+        return ServicePort;
     }
 
-    public void setResourcePackFileDir(String resourcePackFileDir) {
-        ResourcePackFileDir = resourcePackFileDir;
+    public void setServicePort(int servicePort) {
+        ServicePort = servicePort;
     }
-
-    private String ResourcePackFileDir;
-
-    public String getResourcePackDir() {
-        return ResourcePackDir;
-    }
-
-    public void setResourcePackDir(String resourcePackDir) {
-        ResourcePackDir = resourcePackDir;
-    }
-
-    private String ResourcePackDir;
 
     public String getCookieFile() {
         return CookieFile;
@@ -73,15 +66,30 @@ public class BotConfig {
         CookieFile = cookieFile;
     }
 
-    private String CookieFile;
-
-    public int getServicePort() {
-        return ServicePort;
+    public String getResourcePackDir() {
+        return ResourcePackDir;
     }
 
-    public void setServicePort(int servicePort) {
-        ServicePort = servicePort;
+    public void setResourcePackDir(String resourcePackDir) {
+        ResourcePackDir = resourcePackDir;
     }
 
+    public String getResourcePackFileDir() {
+        return ResourcePackFileDir;
+    }
+
+    public void setResourcePackFileDir(String resourcePackFileDir) {
+        ResourcePackFileDir = resourcePackFileDir;
+    }
+
+    private String ProxyHost;
+    private int ProxyPort;
+    private int QueueSize;
+    private long BotAccount;
+    private String BotPassword;
+    private String CacheDir;
     private int ServicePort;
+    private String CookieFile;
+    private String ResourcePackDir;
+    private String ResourcePackFileDir;
 }

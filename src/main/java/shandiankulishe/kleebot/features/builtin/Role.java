@@ -1,7 +1,6 @@
 package shandiankulishe.kleebot.features.builtin;
 
 import java.io.Serializable;
-import java.util.Base64;
 
 public class Role implements Serializable {
     public String getName() {

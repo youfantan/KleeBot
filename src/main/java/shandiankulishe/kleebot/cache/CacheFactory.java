@@ -1,6 +1,5 @@
 package shandiankulishe.kleebot.cache;
 
-import org.openqa.selenium.By;
 import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.utils.FileUtils;
 
@@ -8,6 +7,7 @@ import java.io.ByteArrayInputStream;
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.zip.CRC32;
@@ -30,12 +30,29 @@ public class CacheFactory {
         return Long.toHexString(code.getValue());
     }
     private static HashMap<String ,String> cacheMap=new HashMap<>();
-    public static void restoreCache(String name,byte[] content,long expired){
-        Cache cache=new Cache(content,expired);
-        cache.store();
-        cacheMap.put(name,cache.getCachePath());
+    public static void storeCache(String name, byte[] content, long expired){
+        String cachePath;
+        Cache cache;
+        if ((cachePath=cacheMap.get(name))!=null){
+            cache=Cache.restore(cachePath);
+            try {
+                Field fContent=cache.getClass().getDeclaredField("content");
+                Field fExpired=cache.getClass().getDeclaredField("expired");
+                fContent.setAccessible(true);
+                fExpired.setAccessible(true);
+                fContent.set(cache,content);
+                fExpired.set(cache,expired);
+                cache.store();
+            } catch (NoSuchFieldException | IllegalAccessException e) {
+                e.printStackTrace();
+            }
+        } else{
+            cache=new Cache(content,expired);
+            cache.store();
+            cacheMap.put(name,cache.getCachePath());
+        }
     }
-    public static byte[] getCache(String cacheName){
+    public static byte[] getCache(String cacheName){ ;
         if (cacheMap.containsKey(cacheName)){
             Cache cache=Cache.restore(cacheMap.get(cacheName));
             long saved=System.currentTimeMillis()-cache.getSaveTime();
@@ -78,7 +95,7 @@ public class CacheFactory {
                         value.write(b);
                     } else{
                         String sKey= key.toString(StandardCharsets.UTF_8);
-                        String sValue=key.toString(StandardCharsets.UTF_8);
+                        String sValue=value.toString(StandardCharsets.UTF_8);
                         cacheMap.put(sKey,sValue);
                         key.close();
                         value.close();

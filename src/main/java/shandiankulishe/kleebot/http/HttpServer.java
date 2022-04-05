@@ -1,9 +1,8 @@
 package shandiankulishe.kleebot.http;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.async.BaseFunction;
+import shandiankulishe.kleebot.log.Logger;
 import shandiankulishe.kleebot.utils.FileUtils;
 import shandiankulishe.kleebot.utils.ZipUtils;
 
@@ -20,7 +19,7 @@ public class HttpServer {
         this.port=port;
     }
     private HashMap<String,IWebService> registeredServices=new HashMap<>();
-    private Logger logger= LogManager.getLogger(HttpServer.class);
+    private Logger logger= Logger.getLogger(HttpServer.class);
     public void register(String resourcePackPath){
         ZipUtils.extractZipFile(resourcePackPath,KleeBot.config.getResourcePackDir());
     }
@@ -145,7 +144,7 @@ public class HttpServer {
         if (path.contains(":")) {
             rawPath = path.substring(0, path.indexOf(":"));
         }
-        logger.info("Receive an Request: "+method+" "+rawPath);
+        logger.info("Receive an Request: "+method+" "+rawPath + " Origin IP: "+client.getInetAddress().getHostName());
         if (registeredServices.containsKey(rawPath)){
             if (method.equals("GET")){
                 boolean success=registeredServices.get(rawPath).doGET(new HttpClient(

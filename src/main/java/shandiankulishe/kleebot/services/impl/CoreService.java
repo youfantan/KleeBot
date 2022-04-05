@@ -5,8 +5,6 @@ import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.utils.ExternalResource;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.chrome.ChromeDriver;
 import org.openqa.selenium.chrome.ChromeOptions;
@@ -14,6 +12,7 @@ import shandiankulishe.kleebot.KleeBot;
 import shandiankulishe.kleebot.async.Task;
 import shandiankulishe.kleebot.async.Timer;
 import shandiankulishe.kleebot.services.GroupService;
+import shandiankulishe.kleebot.services.ServiceRegistry;
 import shandiankulishe.kleebot.services.api.HardwareInfo;
 
 import java.io.File;
@@ -23,8 +22,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 
-public class CoreService implements GroupService {
-    private static final Logger logger= LogManager.getLogger(CoreService.class);
+public class CoreService extends GroupService {
     @Override
     public void initialize(){
         getDelay();
@@ -61,14 +59,13 @@ public class CoreService implements GroupService {
             skt.close();
             bilibili_delay=end-start;
         } catch (IOException e) {
-            logger.error(e);
+            e.printStackTrace();
         }
 
     }
     @Override
-    public void execute(GroupMessageEvent event) {
+    public boolean execute(GroupMessageEvent event) throws IOException, InterruptedException {
         if (event.getMessage().serializeToMiraiCode().equals(new At(KleeBot.config.getBotAccount())+" status img")){
-            System.setProperty("webdriver.chrome.driver",new File("bin/chromedriver.exe").getAbsolutePath());
             ChromeOptions options=new ChromeOptions();
             options.addArguments("--headless");
             options.addArguments("--disable-gpu");
@@ -77,23 +74,16 @@ public class CoreService implements GroupService {
             chrome.manage().window().maximize();
             chrome.get("http://localhost:%s/BotStatus/".formatted(KleeBot.config.getServicePort()));
             chrome.executeScript("document.body.style.zoom='1.5'");
-            try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+            Thread.sleep(1000);
             byte[] bytes=chrome.getScreenshotAs(OutputType.BYTES);
+            chrome.close();
             MessageChainBuilder builder=new MessageChainBuilder();
             builder.append(new At(event.getSender().getId()));
             ExternalResource resource=ExternalResource.create(bytes);
             Image image=event.getSubject().uploadImage(resource);
             builder.append(image);
             event.getGroup().sendMessage(builder.build());
-            try {
-                resource.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+            resource.close();
         } else if (event.getMessage().serializeToMiraiCode().equals(new At(KleeBot.config.getBotAccount())+" status")){
             MessageChainBuilder builder=new MessageChainBuilder();
             //get current time
@@ -105,15 +95,15 @@ public class CoreService implements GroupService {
             List<String> names=KleeBot.queue.getAllRunningTasksName();
             builder.append(
                     """
-                            Copyright 2022 shandiankulishe@gmail.com
-                            浏览器访问http://101.43.185.119/BotStatus/可以直接获取实时Bot状态
+                            KleeBot初号机
+                            Web页面: http://%s/BotStatus/
                             版本: %s
                             github repository: https://www.github.com/youfantan/Kleebot
                             OpenCV版本: %s
                             Tesseract-OCR版本: %s
                             Java版本: %s
                             任务队列: %d 个任务正在运行
-                            """.formatted("dev(@dev-000000) build at 2022-3-5","4.5.5","4.1",System.getProperty("java.version"),names.size())
+                            """.formatted(KleeBot.ip,KleeBot.GET_VERSION(),"4.5.5","4.1",System.getProperty("java.version"),names.size())
             );
             for (int i = 0; i < names.size(); i++) {
                 builder.append("\t"+i+": "+names.get(i)+"\n");
@@ -130,17 +120,17 @@ public class CoreService implements GroupService {
                             与pixiv的延迟: %d 毫秒
                             与bilbili的延迟: %d 毫秒
                             进程ID: %d
+                            已安装服务:
                             """.formatted(HardwareInfo.getInstance().getCpuModelInfo(), HardwareInfo.getInstance().getCpuClockCycleInfo(), HardwareInfo.getInstance().getCpuUsageInfo() * 100, memUse * 100, formatter.format(date), running, pixiv_delay, bilibili_delay, HardwareInfo.getInstance().getProcessIDInfo())
             );
+            String[] services= ServiceRegistry.getAllRegisteredServices();
+            for (String service:services){
+                builder.append("\t").append(service).append("\n");
+            }
             event.getGroup().sendMessage(builder.build());
         } else {
-            sendHelpMessage(event);
+            return false;
         }
-    }
-    public static void sendHelpMessage(GroupMessageEvent event){
-        MessageChainBuilder builder=new MessageChainBuilder();
-        builder.append(new At(event.getSender().getId()));
-        builder.append(" 未定义用法。请发送@KleeBot help以获取帮助");
-        event.getGroup().sendMessage(builder.build());
+        return true;
     }
 }

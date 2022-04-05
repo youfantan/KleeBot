@@ -1,7 +1,6 @@
 package shandiankulishe.kleebot.commands;
 
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import shandiankulishe.kleebot.log.Logger;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -9,7 +8,7 @@ import java.util.Scanner;
 
 public class CommandRegistry {
     private static HashMap<String,ICommandExecutor> commandMap=new HashMap<>();
-    private static Logger logger= LogManager.getLogger(CommandRegistry.class);
+    private static Logger logger= Logger.getLogger(CommandRegistry.class);
     public static void register(String name,ICommandExecutor executor){
         commandMap.put(name,executor);
     }

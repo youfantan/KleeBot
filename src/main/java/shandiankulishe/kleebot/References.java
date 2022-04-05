@@ -10,4 +10,9 @@ public class References {
     public static final String MIHOYO_GAME_RECORD_URL="https://api-takumi.mihoyo.com/game_record/app/genshin/api/index?role_id=%s&server=%s";
     public static final String MIHOYO_ABYSS_URL="https://api-takumi-record.mihoyo.com/game_record/app/genshin/api/spiralAbyss?schedule_type=%s&server=%s&role_id=%s";
     public static final String MIHOYO_NOTES_URL="https://api-takumi.mihoyo.com/game_record/app/genshin/api/dailyNote?role_id=%s&server=%s";
+    public static final String MCWIKI_CN_URL="https://minecraft.fandom.com/zh/wiki";
+    public static final String MCWIKI_EN_URL="https://minecraft.fandom.com/wiki";
+    public static final String WHISPER_KEY_IV="ea412a61f9cd59a4";
+    public static final String WHISPER_KEY_PASSWD="e348da05aa56fe0a";
+    public static final String IP_SEARCH_URL="https://pv.sohu.com/cityjson?ie=utf-8";
 }
