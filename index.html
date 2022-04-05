@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>KleeBot</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&family=Ubuntu&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+          rel="stylesheet">
+    <style rel="stylesheet">
+        html{
+            font-family: 'Ubuntu', 'Noto Sans SC';
+        }
+        #name{
+            position: absolute;
+            top: 3%;
+            left: 5%;
+        }
+        .underline{
+            font-size: 20px;
+            display: inline;
+            width: auto;
+            height: 50px;
+            margin: 20px;
+            position: relative;
+        }
+
+        .underline:after{
+            content: "";
+            width: 0;
+            height: 1px;
+            background: #000000;
+            position: absolute;
+            top: 100%;
+            left: 50%;
+            transition: all 0.5s;
+        }
+        .underline:hover{
+            color: #000000;
+        }
+        .underline:hover:after{
+            left: 0%;
+            width: 100%;
+        }
+        #list{
+            position: absolute;
+            top: 5%;
+            left: 60%;
+            list-style: none;
+        }
+        .underline_link{
+            text-decoration: none;
+            color: rgba(16,16,16,0.61);
+            transition: all 0.3s;
+        }
+        .underline_link:hover{
+            color: #000000;
+        }
+        #description{
+            position: absolute;
+            left: 15%;
+            top: 20%;
+            font-size: 16px;
+        }
+        .text_link{
+            color: rgba(0,0,0,0.61);
+            text-decoration: none;
+        }
+        .text_link:hover{
+            background-color: rgba(0,0,0,0.10);
+            transition: all 0.2s;
+        }
+        .text_link:after{
+
+            content: 'link';
+            font-family: 'Material Icons';
+        }
+    </style>
+</head>
+<body>
+<h1 id="name">KleeBot</h1>
+<ul id="list">
+    <li class="underline"><a class="underline_link" onclick="showKleebot()">KleeBot</a></li>
+    <li class="underline"><a class="underline_link" onclick="showDownload()">下载</a></li>
+    <li class="underline"><a class="underline_link" onclick="showSupport()">支持我们</a></li>
+    <li class="underline"><a class="underline_link" onclick="showDocs()">文档</a></li>
+</ul>
+<div id="main_container"></div>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+    $(document).ready(function(){
+        showKleebot()
+    });
+    function showKleebot() {
+        $('#main_container').load('kleebot.html')
+    }
+    function showDownload() {
+        $('#main_container').load('download.html')
+    }
+    function showSupport() {
+        $('#main_container').load('support.html')
+    }
+    function showDocs() {
+        $('#main_container').load('docs.html')
+    }
+</script>
+</body>
+</html>

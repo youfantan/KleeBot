@@ -1,0 +1,40 @@
+<div id="description">
+  <h1><span class="material-icons">description</span>简介</h1>
+  <p>KleeBot是一个使用Java及C++混合编写的，适用于QQ的机器人。</p>
+  <p>机器人提供了如下功能:</p>
+  <ul>
+    <li>Pixiv榜单查询/IllustId查询</li>
+    <li>Bilibili视频链接提取与解析</li>
+    <li>原神角色信息查询(使用miHoYo Takumi API)</li>
+    <li>原神深渊信息查询(使用miHoYo Takumi API)</li>
+    <li>Minecraft Wiki查询</li>
+    <li>游戏版本更新推送(现支持Minecraft，采用MojiraAPI与VersionManifest.json)</li>
+  </ul>
+  <p>同时，机器人附加了许多如加密图片(Whisper)、Bot状态查询等功能。</p>
+  <p>即将支持的功能:</p>
+  <ul>
+    <li>原神圣遗物评分(采用OpenCV+TesseractOCR)</li>
+    <li>支持加载插件/热更新插件</li>
+  </ul>
+  <p>机器人以AGPL协议开源。</p>
+  <ul>
+    <h2>轻量</h2>
+    <p>所有组件都采用插件式设计，拓展及更新更加方便。每一个功能都被封装成API类，服务与功能分离。</p>
+    <h2>高效率</h2>
+    <p>机器人采用多线程队列的方案来处理消息，不使用时队列休眠，根据分配线程数可以异步执行多个任务(默认32个线程，可在配置文件中更改)。即将面世的圣遗物评分功能将采用分布式设计。</p>
+    <h2>稳定</h2>
+    <p>所有的功能均已通过单元测试。自项目立项至今已测试60余天。所有服务均在JVM平台运行，C++部分非常少。</p>
+  </ul>
+  <h1><span class="material-icons">edit</span>示例</h1>
+  <a class="text_link" href="abyss_info.jpg">原神深渊信息查询</a>
+  <a class="text_link" href="bilibili.png">bilbili链接解析</a>
+  <a class="text_link" href="mcws.png">Minecraft Wiki查询</a>
+  <a class="text_link" href="mcws_img.png">Minecraft Wiki查询图片</a>
+  <a class="text_link" href="pixiv.png">Pixiv榜单</a>
+  <a class="text_link" href="player_info.jpg">原神角色信息查询</a>
+  <h1><span class="material-icons">build</span>构建与下载</h1>
+  <p>KleeBot使用Github Action作为其CI。项目使用Gradle与CMake构建工具，在Windows平台使用OpenJDK与MingwW64编译，在Linux平台使用OpenJDK与GCC编译。</p>
+  <h1><span class="material-icons">share</span>链接</h1>
+  <p>点击<a class="text_link" href="https://www.github.com/youfantan/KleeBot">此链接</a>前往KleeBot的Github仓库。</p>
+  <p>点击<a class="text_link" href="https://jq.qq.com/?_wv=1027&k=IaAvtYDB">此链接</a>前往KleeBot交流群。</p>
+</div>
