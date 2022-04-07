@@ -117,31 +117,36 @@
 <script>
     $(document).ready(function(){
         showKleebot()
-        $('#loading_bar').attr('hidden','true')
     });
     function showKleebot() {
         $('#loading_bar').removeAttr('hidden')
         $('#main_container').empty()
-        $('#main_container').load('kleebot.html')
-        $('#loading_bar').attr('hidden','true')
+        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/kleebot.html', function () {
+            $('#loading_bar').attr('hidden','true')
+        })
     }
     function showDownload() {
         $('#loading_bar').removeAttr('hidden')
         $('#main_container').empty()
-        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/download.html')
+        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/download.html'), function () {
+            $('#loading_bar').attr('hidden','true')
+        }
         $('#loading_bar').attr('hidden','true')
     }
     function showSupport() {
         $('#loading_bar').removeAttr('hidden')
         $('#main_container').empty()
-        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/support.html')
+        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/support.html', function () {
+            $('#loading_bar').attr('hidden','true')
+        })
         $('#loading_bar').attr('hidden','true')
     }
     function showDocs() {
         $('#loading_bar').removeAttr('hidden')
         $('#main_container').empty()
-        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/docs.html')
-        $('#loading_bar').attr('hidden','true')
+        $('#main_container').load('https://cdn.jsdelivr.net/gh/youfantan/KleeBot@gh-pages/docs.html',function () {
+            $('#loading_bar').attr('hidden','true')
+        })
     }
 </script>
 </body>
