@@ -1,3 +1,164 @@
-<div id="description">
-    <p>文档未完成。</p>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title id="title"></title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+SC&family=Ubuntu&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons"
+        rel="stylesheet">
+  <style rel="stylesheet">
+    html {
+      font-family: 'Ubuntu', 'Noto Sans SC',serif;
+    }
+    #icon{
+      position: fixed;
+      top: 3%;
+      left: 1%;
+    }
+    #version {
+      color: rgba(0, 0, 0, 0.47);
+      position: fixed;
+      top: 9%;
+      left: 1%;
+    }
+    #sidebar_summary{
+      position: fixed;
+      top: 15%;
+      left: 0;
+      width: 20%;
+      height: 80%;
+    }
+    #summary{
+      position: fixed;
+      left: 0;
+      list-style: none;
+    }
+    #split_line{
+      position: fixed;
+      left: 25%;
+      height: 100%;
+      width: 1px;
+      background-color: rgba(0,0,0,0.50);
+    }
+    #show_area{
+      position: absolute;
+      left: 30%;
+      line-height: 40px;
+      width: 70%;
+    }
+    .summary_item{
+      text-decoration: none;
+      line-height: 30px;
+      color: rgba(0,0,0,0.50);
+    }
+    .summary_item:hover{
+      transition: all 0.2s;
+      color: #000000;
+    }
+    a{
+      color: rgba(0,0,0,0.61);
+      text-decoration: none;
+    }
+    a:hover{
+      background-color: rgba(0,0,0,0.10);
+      transition: all 0.2s;
+    }
+    a:after{
+
+      content: 'link';
+      font-family: 'Material Icons',serif;
+    }
+    blockquote{
+      background-color: #FFFAF0;
+    }
+    pre{
+      background-color: #f6f8fa;
+      width: 100%;
+      white-space: pre-line;
+    }
+    pre code{
+      line-height: 10px;
+      font-size: 15px;
+    }
+    code{
+      font-size: 16px;
+      font-family: 'JetBrains Mono',monospace;
+      border-style: solid;
+      color: #000000;
+      border-width: 1px;
+      border-color: #f6f8fa;
+      background-color: #f6f8fa;
+      border-radius: 5px;
+    }
+    #loading_bar{
+      position: absolute;
+      left: 70%;
+      transform: translateX(-50%);
+      top: 30%;
+    }
+    #loading path,
+    #loading rect{
+      fill: #000000;
+    }
+  </style>
+</head>
+<body>
+<h1 id="icon"></h1>
+<h3 id="version"></h3>
+<div id="sidebar_summary">
+  <ul id="summary">
+  </ul>
 </div>
+<div id="split_line"></div>
+<div id="loading_bar" hidden>
+  <svg version="1.1" id="loading" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+       width="60px" height="60px" viewBox="0 0 50 50" style="enable-background:new 0 0 50 50;" xml:space="preserve">
+  <path fill="#000" d="M25.251,6.461c-10.318,0-18.683,8.365-18.683,18.683h4.068c0-8.071,6.543-14.615,14.615-14.615V6.461z">
+    <animateTransform attributeType="xml"
+                      attributeName="transform"
+                      type="rotate"
+                      from="0 25 25"
+                      to="360 25 25"
+                      dur="0.6s"
+                      repeatCount="indefinite"/>
+    </path>
+  </svg>
+</div>
+<div id="show_area">
+
+</div>
+<script src="https://cdn.jsdelivr.net/npm/showdown@2.0.3/dist/showdown.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js" integrity="sha512-894YE6QWD5I59HgZOGReFYm4dnWc1Qt5NtvYSaNcOP+u1T9qYdvdihz0PPSiiqn/+/3e7Jo4EaG7TubfWGUrMQ==" crossorigin="anonymous" referrerpolicy="no-referrer"></script>
+<script>
+  let pages;
+  function showMarkdown(markdownUrl) {
+    let loading_bar=$('#loading_bar');
+    loading_bar.removeAttr('hidden')
+    $.get(markdownUrl,function (markdownData) {
+      loading_bar.attr('hidden','true');
+      let converter=new showdown.Converter();
+      let html=converter.makeHtml(markdownData);
+      let show_area=$('#show_area');
+      show_area.empty();
+      show_area.append(html)
+    })
+  }
+  $(document).ready(function () {
+    $.get('./summary.json', function (configuration) {
+      $('#title').text(configuration.docName)
+      $('#version').text(configuration.version)
+      $('#icon').text(configuration.icon)
+      let summary=configuration.summary
+      showMarkdown(configuration.mainPage)
+      pages=summary;
+      $('#summary').append('<li><a class="summary_item" onclick="showMarkdown(\''+configuration.mainPage+'\')">'+configuration.docName+'</a></li>')
+      for (let i in summary){
+        $('#summary').append('<li><a class="summary_item" onclick="showMarkdown(\''+summary[i].url+'\')">'+summary[i].title+"</a></li>");
+      }
+    })
+  })
+</script>
+</body>
+</html>

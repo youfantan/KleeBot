@@ -1,0 +1,29 @@
+{
+  "docName": "KleeBot开发文档",
+  "version": "dev(dev@000000) build at 2022-4-9",
+  "icon": "KleeBot",
+  "author": "Glous(shandiankulishe@gmail.com)",
+  "mainPage": "./threads/README.md",
+  "summary": [
+    {
+      "title": "0x00 插件篇",
+      "url": "./threads/0x00.md"
+    },
+    {
+      "title": "0x01 开发篇",
+      "url": "./threads/0x02.md"
+    },
+    {
+      "title": "0x03 开发札记篇-米哈游TakumiAPI的使用",
+      "url": "./threads/ex-0x03.md"
+    },
+    {
+      "title": "0x04 开发札记篇-KleeBot的设计模式",
+      "url": "./threads/ex-0x04.md"
+    },
+    {
+      "title": "0x05 开发札记篇-圣遗物识别的开发构想",
+      "url": "./threads/ex-0x05.md"
+    }
+  ]
+}
