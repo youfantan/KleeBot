@@ -3,16 +3,17 @@ plugins {
     id 'application'
     id 'org.jetbrains.kotlin.jvm' version '1.6.0'
 }
-mainClassName='shandiankulishe.kleebot.KleeBot'
+mainClassName='glous.kleebot.KleeBot'
 repositories {
-    maven { url 'https://maven.aliyun.com/repository/public' }
-    maven { url 'https://jitpack.io' }
-    mavenCentral()
+        maven { url 'https://maven.aliyun.com/repository/public/' }
+        maven { url 'https://maven.aliyun.com/repository/google/'}
+        maven { url 'https://maven.aliyun.com/repository/jcenter/'}
+        mavenCentral()
 }
 
 jar{
     manifest{
-        attributes 'Main-Class': 'shandiankulishe.kleebot.KleeBot'
+        attributes 'Main-Class': 'glous.kleebot.KleeBot'
         exclude 'META-INF/*.RSA', 'META-INF/*.SF','META-INF/*.DSA'
     }
     from {
@@ -22,10 +23,24 @@ jar{
     }
 }
 task makeFullJar(type: Jar){
+    group 'KleeBot'
+    manifest{
+        attributes 'Main-Class': 'glous.kleebot.KleeBot'
+    }
+    baseName 'KleeBot_full'
+    from 'build/classes/java/main'
+    from 'src/main/resources'
+    from {
+        configurations.runtimeClasspath.collect {
+            it.isDirectory() ? it : zipTree(it)
+        }
+    }
+    destinationDirectory=file('build/release')
 }
 task makeReleaseJar(type: Jar){
+    group 'KleeBot'
     manifest{
-        attributes 'Main-Class': 'shandiankulishe.kleebot.KleeBot'
+        attributes 'Main-Class': 'glous.kleebot.KleeBot'
     }
     baseName 'KleeBot'
     from 'build/classes/java/main'
@@ -40,6 +55,7 @@ dependencies{
     implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'org.seleniumhq.selenium:selenium-java:4.1.2'
     implementation 'org.bouncycastle:bcprov-jdk15on:1.70'
+    implementation 'com.github.oshi:oshi-core:6.1.5'
     testImplementation 'org.junit.jupiter:junit-jupiter-api:5.7.0'
     testRuntimeOnly 'org.junit.jupiter:junit-jupiter-engine:5.7.0'
 }
@@ -49,6 +65,7 @@ tasks.withType(JavaCompile) {
 }
 tasks.withType(Jar) { duplicatesStrategy = DuplicatesStrategy.INCLUDE }
 task exportLibs(type:Copy){
+    group 'KleeBot'
     from configurations.runtimeClasspath
     into "build/deps/"
 }

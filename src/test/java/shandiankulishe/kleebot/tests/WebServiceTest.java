@@ -2,15 +2,14 @@ package shandiankulishe.kleebot.tests;
 
 import com.google.gson.Gson;
 import org.junit.jupiter.api.Test;
-import shandiankulishe.kleebot.BotConfig;
-import shandiankulishe.kleebot.GlobalVars;
-import shandiankulishe.kleebot.KleeBot;
-import shandiankulishe.kleebot.async.AsyncTaskQueue;
-import shandiankulishe.kleebot.async.Timer;
-import shandiankulishe.kleebot.http.HttpServer;
-import shandiankulishe.kleebot.http.services.HardwareInfoService;
-import shandiankulishe.kleebot.services.api.HardwareInfo;
-import shandiankulishe.kleebot.utils.StringUtils;
+import glous.kleebot.BotConfig;
+import glous.kleebot.GlobalVars;
+import glous.kleebot.KleeBot;
+import glous.kleebot.async.AsyncTaskQueue;
+import glous.kleebot.async.Timer;
+import glous.kleebot.http.HttpServer;
+import glous.kleebot.http.services.HardwareInfoService;
+import glous.kleebot.services.api.HardwareInfo;
 
 import java.io.*;
 

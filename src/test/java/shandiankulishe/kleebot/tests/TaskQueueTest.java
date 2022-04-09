@@ -1,8 +1,8 @@
 package shandiankulishe.kleebot.tests;
 
 import org.junit.jupiter.api.Test;
-import shandiankulishe.kleebot.async.AsyncTaskQueue;
-import shandiankulishe.kleebot.services.api.HardwareInfo;
+import glous.kleebot.async.AsyncTaskQueue;
+import glous.kleebot.services.api.HardwareInfo;
 import java.util.List;
 
 public class TaskQueueTest {

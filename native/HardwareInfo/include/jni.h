@@ -41,8 +41,12 @@
 
 /* jni_md.h contains the machine-dependent typedefs for jbyte, jint
    and jlong */
-
-#include "jni_md.h"
+#ifdef WIN32
+#include "windows/jni_md.h"
+#endif
+#ifdef __linux__
+#include "linux/jni_md.h"
+#endif
 
 #ifdef __cplusplus
 extern "C" {

@@ -1,9 +1,9 @@
 package shandiankulishe.kleebot.tests;
 
 import org.junit.jupiter.api.Test;
-import shandiankulishe.kleebot.BotConfig;
-import shandiankulishe.kleebot.config.ConfigValue;
-import shandiankulishe.kleebot.config.Configuration;
+import glous.kleebot.BotConfig;
+import glous.kleebot.config.ConfigValue;
+import glous.kleebot.config.Configuration;
 
 import java.io.IOException;
 import java.util.Map;
