@@ -11,7 +11,7 @@ jobs:
       - uses: actions/setup-java@v3.1.0
         with:
           java-version: 17
-          distribution: jdk
+          distribution: temurin
       - uses: DamianReeves/write-file-action@v1.0
         with:
           path: src/main/resources/SIGN
@@ -41,7 +41,7 @@ jobs:
       - uses: actions/setup-java@v3.1.0
         with:
           java-version: 17
-          distribution: jdk
+          distribution: temurin
       - uses: DamianReeves/write-file-action@v1.0
         with:
           path: src/main/resources/SIGN
