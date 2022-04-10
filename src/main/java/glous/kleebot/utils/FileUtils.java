@@ -30,7 +30,21 @@ public class FileUtils {
         in.close();
         return out.toByteArray();
     }
-
+    public static String readStream(InputStream stream){
+        try {
+            BufferedReader reader=new BufferedReader(new InputStreamReader(stream));
+            String line;
+            StringBuilder builder=new StringBuilder();
+            while ((line=reader.readLine())!=null){
+                builder.append(line);
+            }
+            reader.close();
+            return builder.toString();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public static String readFile(String fileName, Charset charset) throws IOException {
         byte[] bytes = readFile(fileName);
         if (bytes == null) {

@@ -1,13 +1,11 @@
 package glous.kleebot.services.impl;
 
+import glous.kleebot.http.ChromeInstance;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
 import net.mamoe.mirai.message.data.At;
 import net.mamoe.mirai.message.data.Image;
 import net.mamoe.mirai.message.data.MessageChainBuilder;
 import net.mamoe.mirai.utils.ExternalResource;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.chrome.ChromeDriver;
-import org.openqa.selenium.chrome.ChromeOptions;
 import glous.kleebot.KleeBot;
 import glous.kleebot.async.Task;
 import glous.kleebot.async.Timer;
@@ -67,17 +65,7 @@ public class CoreService extends GroupService {
     @Override
     public boolean execute(GroupMessageEvent event) throws IOException, InterruptedException {
         if (event.getMessage().serializeToMiraiCode().equals(new At(KleeBot.config.getBotAccount())+" status img")){
-            ChromeOptions options=new ChromeOptions();
-            options.addArguments("--headless");
-            options.addArguments("--disable-gpu");
-            options.addArguments("--window-size=2160,1380");
-            ChromeDriver chrome=new ChromeDriver(options);
-            chrome.manage().window().maximize();
-            chrome.get("http://localhost:%s/BotStatus/".formatted(KleeBot.config.getServicePort()));
-            chrome.executeScript("document.body.style.zoom='1.5'");
-            Thread.sleep(1000);
-            byte[] bytes=chrome.getScreenshotAs(OutputType.BYTES);
-            chrome.close();
+            byte[] bytes=ChromeInstance.getScreenShot("http://localhost:%s/BotStatus/".formatted(KleeBot.config.getServicePort()),1000,0);
             MessageChainBuilder builder=new MessageChainBuilder();
             builder.append(new At(event.getSender().getId()));
             ExternalResource resource=ExternalResource.create(bytes);
@@ -96,7 +84,7 @@ public class CoreService extends GroupService {
             List<String> names=KleeBot.queue.getAllRunningTasksName();
             builder.append(
                     """
-                            KleeBot初号机
+                            KleeBot %s
                             Web页面: http://%s/BotStatus/
                             版本: %s
                             Github仓库: https://www.github.com/youfantan/Kleebot
@@ -106,7 +94,7 @@ public class CoreService extends GroupService {
                             Java版本: %s
                             运行系统: %s
                             任务队列: %d 个任务正在运行
-                            """.formatted(KleeBot.ip,KleeBot.GET_VERSION(),"4.5.5","4.1",System.getProperty("java.version"),System.getProperty("os.name"),names.size())
+                            """.formatted(KleeBot.GET_VERSION(),KleeBot.ip,KleeBot.GET_VERSION(),"4.5.5","4.1",System.getProperty("java.version"),System.getProperty("os.name"),names.size())
             );
             for (int i = 0; i < names.size(); i++) {
                 builder.append("\t"+i+": "+names.get(i)+"\n");

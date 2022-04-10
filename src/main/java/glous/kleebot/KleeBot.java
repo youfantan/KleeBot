@@ -17,6 +17,7 @@ import glous.kleebot.services.ServiceRegistry;
 import glous.kleebot.services.api.HardwareInfo;
 import glous.kleebot.utils.FileUtils;
 import glous.kleebot.services.impl.*;
+import glous.kleebot.utils.ZipUtils;
 import net.mamoe.mirai.Bot;
 import net.mamoe.mirai.BotFactory;
 import net.mamoe.mirai.event.events.GroupMessageEvent;
@@ -66,7 +67,7 @@ public class KleeBot {
         return serverInstance;
     }
     public static String GET_VERSION(){
-        return "KleeBot dev@(dev-000000) build at 2022-4-9";
+        return "v0.0.1(@%s)".formatted(FileUtils.readStream(KleeBot.class.getResourceAsStream("/SIGN")));
     }
     public static int GET_OS(){
         String OSName=System.getProperty("os.name");
@@ -80,11 +81,35 @@ public class KleeBot {
     }
     public static void main(String[] args) throws IOException {
         System.setProperty("webdriver.chrome.silentOutput", "true");
+        File bin=new File("bin");
+        if (!bin.exists()){
+            bin.mkdir();
+        }
         if (GET_OS()==0){
-            System.load(new File("bin/libHardwareInfo.dll").getAbsolutePath());
+            File libHardwareInfoNative=new File("bin/libHardwareInfo.dll");
+            if (!libHardwareInfoNative.exists()){
+                FileUtils.writeFile("bin/libHardwareInfo.dll", Objects.requireNonNull(FileUtils.readStream(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
+            }
+            System.load(libHardwareInfoNative.getAbsolutePath());
+            File chromeDriverNative=new File("bin/chromedriver.exe");
+            if (!chromeDriverNative.exists()){
+                System.out.println("Missing chromeDriver.Start to download binaries from server.");
+                FileUtils.writeFile("bin/chromedriver_win32.zip",FileUtils.download("https://registry.npmmirror.com/-/binary/chromedriver/99.0.4844.51/chromedriver_win32.zip"));
+                ZipUtils.extractZipFile("bin/chromedriver_win32.zip","bin");
+            }
             System.setProperty("webdriver.chrome.driver",new File("bin/chromedriver.exe").getAbsolutePath());
         } else if (GET_OS()==1){
-            System.load(new File("bin/libHardwareInfo.so").getAbsolutePath());
+            File libHardwareInfoNative=new File("bin/libHardwareInfo.so");
+            if (!libHardwareInfoNative.exists()){
+                FileUtils.writeFile("bin/libHardwareInfo.so", Objects.requireNonNull(FileUtils.readStream(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
+            }
+            System.load(libHardwareInfoNative.getAbsolutePath());
+            File chromeDriverNative=new File("bin/chromedriver");
+            if (!chromeDriverNative.exists()){
+                System.out.println("Missing chromeDriver.Start to download binaries from server.");
+                FileUtils.writeFile("bin/chromedriver_linux64.zip",FileUtils.download("https://registry.npmmirror.com/-/binary/chromedriver/99.0.4844.51/chromedriver_linux64.zip"));
+                ZipUtils.extractZipFile("bin/chromedriver_linux64.zip","bin");
+            }
             System.setProperty("webdriver.chrome.driver",new File("bin/chromedriver").getAbsolutePath());
         } else{
             System.out.println("NOT SUPPORTED SYSTEM");
@@ -200,10 +225,7 @@ public class KleeBot {
                 System.exit(0);
             }
             ServiceRegistry.init();
-            //not support linux chrome driver yet
-            if (GET_OS()==0){
-                ChromeInstance.initialize();
-            }
+            ChromeInstance.initialize();
             logger.trace("Chrome Driver初始化完成");
             Timer.init();
             Timer.start();
