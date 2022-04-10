@@ -88,7 +88,7 @@ public class KleeBot {
         if (GET_OS()==0){
             File libHardwareInfoNative=new File("bin/libHardwareInfo.dll");
             if (!libHardwareInfoNative.exists()){
-                FileUtils.writeFile("bin/libHardwareInfo.dll", Objects.requireNonNull(FileUtils.readStream(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
+                FileUtils.writeFile("bin/libHardwareInfo.dll", Objects.requireNonNull(FileUtils.readStreamBytes(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
             }
             System.load(libHardwareInfoNative.getAbsolutePath());
             File chromeDriverNative=new File("bin/chromedriver.exe");
@@ -101,7 +101,7 @@ public class KleeBot {
         } else if (GET_OS()==1){
             File libHardwareInfoNative=new File("bin/libHardwareInfo.so");
             if (!libHardwareInfoNative.exists()){
-                FileUtils.writeFile("bin/libHardwareInfo.so", Objects.requireNonNull(FileUtils.readStream(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
+                FileUtils.writeFile("bin/libHardwareInfo.so", Objects.requireNonNull(FileUtils.readStreamBytes(KleeBot.class.getResourceAsStream("/libHardwareInfo.dll"))));
             }
             System.load(libHardwareInfoNative.getAbsolutePath());
             File chromeDriverNative=new File("bin/chromedriver");

@@ -45,6 +45,23 @@ public class FileUtils {
             return null;
         }
     }
+    public static byte[] readStreamBytes(InputStream stream){
+        try {
+            BufferedInputStream in=new BufferedInputStream(stream);
+            byte[] bytes=new byte[1024];
+            int bytesRead;
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            while ((bytesRead=in.read(bytes))!=-1){
+                out.write(bytes,0,bytesRead);
+            }
+            in.close();
+            out.close();
+            return out.toByteArray();
+        } catch (IOException e) {
+            e.printStackTrace();
+            return null;
+        }
+    }
     public static String readFile(String fileName, Charset charset) throws IOException {
         byte[] bytes = readFile(fileName);
         if (bytes == null) {
