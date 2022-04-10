@@ -26,6 +26,7 @@ jobs:
           cp libHardwareInfo.so ../../../src/main/resources/libHardwareInfo.so
       - name: Build Java
         run: |
+          chmod +x gradlew
           ./gradlew build -x test
           ./gradlew makeReleaseJar
           ./gradlew exportAll

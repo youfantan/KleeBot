@@ -67,11 +67,7 @@ public class KleeBot {
         return serverInstance;
     }
     public static String GET_VERSION(){
-<<<<<<< HEAD
-        return "%s(@%s)".formatted(FileUtils.readStream(KleeBot.class.getResourceAsStream("/RELEASE")),FileUtils.readStream(KleeBot.class.getResourceAsStream("/SIGN")));
-=======
         return "v0.0.1(@%s)".formatted(FileUtils.readStream(KleeBot.class.getResourceAsStream("/SIGN")));
->>>>>>> 3d95d2d79999af4867af59e09d38d393cb9ee7cf
     }
     public static int GET_OS(){
         String OSName=System.getProperty("os.name");

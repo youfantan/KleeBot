@@ -1,7 +1,6 @@
 build/
 .idea/
 .gradle/
-build/
 native/TesseractForASOCR/
 native/ArtifactsScore/
 native/TestTesseract
