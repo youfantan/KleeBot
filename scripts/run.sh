@@ -1,0 +1,1 @@
+java -cp .:KleeBot.jar:./dependencies/* glous.kleebot.KleeBot

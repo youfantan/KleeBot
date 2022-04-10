@@ -1,0 +1,66 @@
+name: build
+on:
+  push:
+    branches: [ master ]
+jobs:
+  build_linux64:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: lukka/get-cmake@v3.23.0
+      - uses: actions/setup-java@v3.1.0
+        with:
+          java-version: 17
+          distribution: jdk
+      - uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: src/main/resources/SIGN
+          contents: ${{ github.sha }}
+      - name: Build Native
+        run: |
+          cd native/HardwareInfo
+          mkdir build
+          cd build
+          cmake ..
+          make
+          cp libHardwareInfo.so ../../../src/main/resources/libHardwareInfo.so
+      - name: Build Java
+        run: |
+          ./gradlew build -x test
+          ./gradlew makeReleaseJar
+          ./gradlew exportAll
+      - uses: actions/upload-artifact@v3.0.0
+        with:
+          name: kleebot_build_linux64
+          path: build/all
+  build_win64:
+    runs-on: windows-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: lukka/get-cmake@v3.23.0
+      - uses: actions/setup-java@v3.1.0
+        with:
+          java-version: 17
+          distribution: jdk
+      - uses: DamianReeves/write-file-action@v1.0
+        with:
+          path: src/main/resources/SIGN
+          contents: ${{ github.sha }}
+      - uses: egor-tensin/setup-mingw@v2
+      - name: Build Native
+        run: |
+          cd .\native\HardwareInfo\
+          mkdir build
+          cd build
+          cmake -G"MinGW Makefiles" ..
+          mingw32-make
+          copy libHardwareInfo.dll ../../../src/main/resources/libHardwareInfo.dll
+      - name: Build Java
+        run: |
+          ./gradlew build -x test
+          ./gradlew makeReleaseJar
+          ./gradlew exportAll
+      - uses: actions/upload-artifact@v3.0.0
+        with:
+          name: kleebot_build_win64
+          path: build/all

@@ -97,17 +97,17 @@ public class PixivService extends GroupService {
             else {
                 return false;
             }
-            if (serialNum>ranking.size()+1){
+            if (serialNum>ranking.size()+1||serialNum<1){
                 return false;
             }
-            HashMap<String,String> artwork=ranking.get(serialNum);
+            HashMap<String,String> artwork=ranking.get(serialNum+1);
             sendRankMessage(event, artwork);
         } else{
             String illustid=method;
             if (!isDigit(illustid)){
                 return false;
             }
-            HashMap<String,String> artwork= api.getArtwork(Integer.parseInt(illustid)-1);
+            HashMap<String,String> artwork= api.getArtwork(Integer.parseInt(illustid));
             if (artwork==null){
                 return false;
             }
