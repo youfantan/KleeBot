@@ -14,6 +14,8 @@ import glous.kleebot.services.GroupService;
 import glous.kleebot.utils.FileUtils;
 
 import java.io.*;
+import java.net.InetSocketAddress;
+import java.net.Proxy;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -71,7 +73,7 @@ public class AutoPostService extends GroupService {
         Timer.registerScheduledTask(new Task(()->{
             //update version
             try {
-                byte[] manifest_bytes=FileUtils.download("https://launchermeta.mojang.com/mc/game/version_manifest.json");
+                byte[] manifest_bytes=FileUtils.download("https://launchermeta.mojang.com/mc/game/version_manifest.json",new Proxy(Proxy.Type.HTTP,new InetSocketAddress(KleeBot.config.getProxyHost(),KleeBot.config.getProxyPort())));
                 String manifest=new String(manifest_bytes, StandardCharsets.UTF_8);
                 JsonElement ele=JsonParser.parseString(manifest);
                 JsonObject object=ele.getAsJsonObject();

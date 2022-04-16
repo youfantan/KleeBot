@@ -1,8 +1,8 @@
 package shandiankulishe.kleebot.tests;
 
+import glous.kleebot.config.ConfigNode;
 import org.junit.jupiter.api.Test;
 import glous.kleebot.BotConfig;
-import glous.kleebot.config.ConfigValue;
 import glous.kleebot.config.Configuration;
 
 import java.io.IOException;
@@ -25,13 +25,14 @@ public class ConfigTest {
                 CookieFile: cookie.dat #设置米游社Cookie文件
                 ResourcePackDir: pages #设置Http静态服务资源包路径
                 ResourcePackFileDir: resourcePacks #设置Http静态服务资源包释放路径
+                SilentMode : true #设置是否输出群内消息
                 """;
         Configuration configuration=new Configuration();
         configuration.load(defaultConfig);
-        Map<String, ConfigValue> map=configuration.getConfigMap();
-        for (Map.Entry<String, ConfigValue> entry :
+        Map<Integer, ConfigNode> map=configuration.getConfigNodes();
+        for (Map.Entry<Integer, ConfigNode> entry :
                 map.entrySet()) {
-            System.out.printf("Key: %s Value: %s ValueType: %s Comment: %s\n",entry.getKey(),entry.getValue().getVal(),entry.getValue().getVal().getClass().getName(),entry.getValue().getComment());
+            System.out.printf("SerialCode: %d Key: %s Value: %s ValueType: %s Comment: %s\n",entry.getKey(),entry.getValue().getKey(),entry.getValue().getValue(),entry.getValue().getValue().getClass().getName(),entry.getValue().getComment());
         }
         System.out.println((String) configuration.get("ProxyHost"));
         System.out.println(configuration.getString("ProxyHost"));

@@ -138,6 +138,7 @@ public class KleeBot {
         Configuration configuration=new Configuration();
         KleeBot.configurationInstance=configuration;
         configuration.load(new File("kleebot.configuration"));
+        logger.debug("配置文件: "+configuration.toString());
         config=configuration.serializeToClass(BotConfig.class);
         File cacheDir=new File(KleeBot.config.getCacheDir());
         if (!cacheDir.exists()){
@@ -237,7 +238,7 @@ public class KleeBot {
             }
             logger.trace("所有服务已完成初始化");
             Bot bot = BotFactory.INSTANCE.newBot(config.getBotAccount(), config.getBotPassword(), botConfiguration -> {
-                botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PAD);
+                botConfiguration.setProtocol(BotConfiguration.MiraiProtocol.ANDROID_PHONE);
                 botConfiguration.fileBasedDeviceInfo();
                 botConfiguration.noBotLog();
                 botConfiguration.noNetworkLog();

@@ -2,6 +2,7 @@ package glous.kleebot.config;
 
 import glous.kleebot.utils.FileUtils;
 import glous.kleebot.utils.StringUtils;
+import org.jetbrains.annotations.Nullable;
 
 import java.io.*;
 import java.lang.reflect.Field;
@@ -10,6 +11,7 @@ import java.math.BigInteger;
 import java.nio.charset.StandardCharsets;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Objects;
 
 public class Configuration {
     private static final int STATUS_KEY=0;
@@ -17,11 +19,21 @@ public class Configuration {
     private static final int STATUS_COMMENT=2;
     private File configFile;
     private String configContent;
-    private Map<String,ConfigValue> configMap;
+    //Integer Key is just a list-like map impl
+    private Map<Integer,ConfigNode> configNodes;
+    private Map<String,Integer> linear_search_impl;
     public Configuration(){
     }
     public Configuration(File file){
         this.configFile=file;
+    }
+    public String toString(){
+        StringBuilder builder=new StringBuilder();
+        for (Map.Entry<Integer,ConfigNode> entry :
+                configNodes.entrySet()) {
+            builder.append("Key : %s Value: %s(%s) Comment: %s\n".formatted(entry.getKey(),entry.getValue().getValue(),entry.getValue().getValue().getClass().getName(),entry.getValue().getComment()));
+        }
+        return builder.toString();
     }
     public void load(File file) throws IOException {
         this.configFile=file;
@@ -34,9 +46,11 @@ public class Configuration {
     public void load() throws IOException {
         this.parse();
     }
-    public Map<String,ConfigValue> getConfigMap(){
-        return this.configMap;
+
+    public Map<Integer, ConfigNode> getConfigNodes() {
+        return configNodes;
     }
+
     public <T> T serializeToClass(Class clz){
         try {
             Object obj=clz.getConstructors()[0].newInstance();
@@ -44,24 +58,26 @@ public class Configuration {
             for (Field f :
                     fields) {
                 f.setAccessible(true);
-                Object val;
-                if ((val=getObject(f.getName()))!=null) {
-                    f.set(obj,val);
+                ConfigNode node=getNode(f.getName());
+                if (node!=null) {
+                    f.set(obj,node.getValue());
                 }
             }
             return (T) obj;
-        } catch (InstantiationException | IllegalAccessException | InvocationTargetException | IOException e) {
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
             e.printStackTrace();
             return null;
         }
     }
     public void mergeClass(Object obj){
+        //get data struct
         Field[] fields=obj.getClass().getDeclaredFields();
         for (Field f :
                 fields) {
             f.setAccessible(true);
             try {
-                setValue(f.getName(),f.get(obj),configMap.get(f.getName()).getComment());
+                ConfigNode node=getNode(f.getName());
+                setValue(f.getName(),f.get(obj),node.getComment());
             } catch (IllegalAccessException e) {
                 e.printStackTrace();
             }
@@ -69,9 +85,15 @@ public class Configuration {
     }
     public String save(){
         StringBuilder builder=new StringBuilder();
-        for (Map.Entry<String, ConfigValue> entry :
-                configMap.entrySet()) {
-            builder.append(entry.getKey()).append(" : ").append(entry.getValue().getVal()).append(" #").append(entry.getValue().getComment()).append("\n");
+        for (Map.Entry<Integer, ConfigNode> entry :
+                configNodes.entrySet()) {
+            if (entry.getValue().getKey().equals("__SINGLE_LINE_COMMENT")&&entry.getValue().getValue().equals("__SINGLE_LINE_COMMENT"))
+                 builder.append("# ").append(entry.getValue().getComment()).append("\n");
+            else
+                if (!entry.getValue().getComment().isEmpty())
+                    builder.append(entry.getValue().getKey()).append(" : ").append(entry.getValue().getValue()).append(" #").append(entry.getValue().getComment()).append("\n");
+                else
+                    builder.append(entry.getValue().getKey()).append(" : ").append(entry.getValue().getValue()).append("\n");
         }
         return builder.toString();
     }
@@ -83,13 +105,15 @@ public class Configuration {
         }
     }
     public boolean contains(String key){
-        return this.configMap.containsKey(key);
+        return getNode(key)==null;
     }
-    public void setValue(String key,ConfigValue value){
-        this.configMap.put(key,value);
+    public void setValue(String key,ConfigNode node){
+        int index=this.linear_search_impl.get(key);
+        this.configNodes.put(index,node);
     }
     public void setValue(String key,Object value,String comment){
-        this.setValue(key,new ConfigValue(value,comment));
+        this.setValue(key, new ConfigNode(key, value, Objects.requireNonNullElse(comment, "")));
+
     }
     public void setValue(String key,Object value){
         this.setValue(key,value,"");
@@ -97,12 +121,20 @@ public class Configuration {
     public <T> T get(String key) throws IOException {
         return (T)getObject(key);
     }
+    public ConfigNode getNode(String key){
+        if (this.linear_search_impl.containsKey(key)){
+            int index=this.linear_search_impl.get(key);
+            return this.configNodes.get(index);
+        } else{
+            return null;
+        }
+    }
     public String getComment(String key) throws IOException {
-        ConfigValue obj=this.configMap.get(key);
-        if (obj==null){
+        ConfigNode node=getNode(key);
+        if (node==null){
             exception(0,0,"%s not found".formatted(key));
         }
-        return obj.getComment();
+        return node.getComment();
     }
     public int getInt(String key) throws IOException {
         Object obj=getObject(key);
@@ -140,12 +172,18 @@ public class Configuration {
         }
         return false;
     }
+    @Nullable
     private Object getObject(String key) throws IOException {
-        Object obj=this.configMap.get(key).getVal();;
-        if (obj==null){
-            exception(0,0,"%s not found".formatted(key));
-        }
-        return obj;
+        //impl linear search so change the data struct
+        ConfigNode node;
+        if ((node=getNode(key))!=null){
+            Object obj=node.getValue();
+            if (obj==null){
+                exception(0,0,"%s not found".formatted(key));
+            }
+            return obj;
+        } else
+            return null;
     }
     private void exception(int line,int col,String msg) throws IOException {
         throw new IOException("at line: %d col: %d:\n%s".formatted(line,col,msg));
@@ -158,10 +196,12 @@ public class Configuration {
         char[] chars=configContent.toCharArray();
         int line=0;
         int col=0;
-        Map<String,ConfigValue> objects=new LinkedHashMap<>();
+        Map<Integer,ConfigNode> nodes=new LinkedHashMap<>();
+        Map<String,Integer> linear_search_impl=new LinkedHashMap<>();
         String key="";
         String val="";
         String comment="";
+        int serialCode=0;
         for (char c :
                 chars) {
             col++;
@@ -184,15 +224,25 @@ public class Configuration {
                 case STATUS_VALUE:
                 {
                     if (c == '\n') {
+                        if (val.length()>1&&val.charAt(val.length()-1)=='\r'){
+                            val=val.substring(0,val.length()-1);
+                        }
                         if (!val.equals("")||!key.equals("")) {
                             Object oVal = getVal(val);
-                            objects.put(key, new ConfigValue(oVal, comment));
+                            nodes.put(serialCode,new ConfigNode(key,oVal,comment));
+                            linear_search_impl.put(key,serialCode);
+                        }
+                        //judge if is a single line comment
+                        if (val.equals("") && key.equals("")) {
+                            //save as a single line comment
+                            nodes.put(serialCode,new SingleLineCommentNode("","",comment));
                         }
                         key="";
                         val="";
                         comment="";
                         STATUS = STATUS_KEY;
                         line++;
+                        serialCode++;
                         //end line
                     } else if (c=='#'){
                         STATUS=STATUS_COMMENT;
@@ -204,15 +254,25 @@ public class Configuration {
                 case STATUS_COMMENT:
                 {
                     if (c == '\n') {
-                        if (!val.equals("")){
-                            Object oVal=getVal(val);
-                            objects.put(key,new ConfigValue(oVal,comment));
+                        if (comment.length()>1&&comment.charAt(comment.length()-1)=='\r'){
+                            comment=comment.substring(0,comment.length()-1);
+                        }
+                        if (!val.equals("")||!key.equals("")) {
+                            Object oVal = getVal(val);
+                            nodes.put(serialCode,new ConfigNode(key,oVal,comment));
+                            linear_search_impl.put(key,serialCode);
+                        }
+                        //judge if is a single line comment
+                        if (val.equals("") && key.equals("")) {
+                            //save as a single line comment
+                            nodes.put(serialCode,new SingleLineCommentNode("","",comment));
                         }
                         key="";
                         val="";
                         comment="";
-                        STATUS=STATUS_KEY;
+                        STATUS = STATUS_KEY;
                         line++;
+                        serialCode++;
                         //end line
                     } else{
                         comment+=c;
@@ -221,14 +281,43 @@ public class Configuration {
                 }
             }
         }
-        this.configMap=objects;
+        this.configNodes=nodes;
+        this.linear_search_impl=linear_search_impl;
     }
     private Object getVal(String origin) throws IOException {
-        if (origin.startsWith(" ")){
-            origin=origin.substring(1);
+        //parse val line by line
+        char[] chars=origin.toCharArray();
+        boolean entered_text_block=false;
+        boolean strict_string_rule=false;
+        boolean may_be_end=false;
+        int endPos=0;
+        StringBuilder builder= new StringBuilder();
+        for (char c :
+                chars) {
+            if (may_be_end)
+                if (c!=' ')
+                    may_be_end=false;
+            if (!entered_text_block){
+                if (c!=' '){
+                    entered_text_block=true;
+                    if (c=='\"'&&!strict_string_rule)
+                        strict_string_rule=true;
+                    else
+                        builder.append(c);
+                }
+            } else {
+                if (c=='\"'||c==' '){
+                    may_be_end=true;
+                    endPos=builder.length();//mark " here
+                } else
+                    builder.append(c);
+            }
         }
-        if (origin.endsWith(" ")){
-            origin=origin.substring(0,origin.length()-1);
+        if (may_be_end)
+            builder.delete(endPos,builder.length());
+        origin=builder.toString();
+        if (strict_string_rule){
+            return origin;
         }
         if (origin.equals("true")) {
             return true;
