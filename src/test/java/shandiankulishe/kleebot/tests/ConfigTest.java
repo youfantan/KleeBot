@@ -29,10 +29,10 @@ public class ConfigTest {
                 """;
         Configuration configuration=new Configuration();
         configuration.load(defaultConfig);
-        Map<Integer, ConfigNode> map=configuration.getConfigNodes();
-        for (Map.Entry<Integer, ConfigNode> entry :
+        Map<String, ConfigNode> map=configuration.getConfigNodes();
+        for (Map.Entry<String, ConfigNode> entry :
                 map.entrySet()) {
-            System.out.printf("SerialCode: %d Key: %s Value: %s ValueType: %s Comment: %s\n",entry.getKey(),entry.getValue().getKey(),entry.getValue().getValue(),entry.getValue().getValue().getClass().getName(),entry.getValue().getComment());
+            System.out.printf("Key: %s Value: %s ValueType: %s Comment: %s\n",entry.getValue().getKey(),entry.getValue().getValue(),entry.getValue().getValue().getClass().getName(),entry.getValue().getComment());
         }
         System.out.println((String) configuration.get("ProxyHost"));
         System.out.println(configuration.getString("ProxyHost"));
@@ -40,5 +40,7 @@ public class ConfigTest {
         config.setQueueSize(128);
         configuration.mergeClass(config);
         System.out.println(configuration.save());
+        System.out.println(configuration.getBoolean("SilentMode"));
+        System.out.println(config.isSilentMode());
     }
 }

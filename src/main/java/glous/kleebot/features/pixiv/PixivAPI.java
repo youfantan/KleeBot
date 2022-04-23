@@ -65,19 +65,28 @@ public class PixivAPI {
         return artwork;
     }
     public HashMap<Integer,HashMap<String,String>> getDailyRanking() throws IOException {
-        return getRanking(References.PIXIV_RANKING_DAILY);
+        return getRanking(References.PIXIV_RANKING_DAILY,true);
     }
     public HashMap<Integer,HashMap<String,String>> getWeeklyRanking() throws IOException {
-        return getRanking(References.PIXIV_RANKING_WEEKLY);
+        return getRanking(References.PIXIV_RANKING_WEEKLY,true);
     }
     public HashMap<Integer,HashMap<String,String>> getMonthlyRanking() throws IOException {
-        return getRanking(References.PIXIV_RANKING_MONTHLY);
+        return getRanking(References.PIXIV_RANKING_MONTHLY,true);
     }
-    public HashMap<Integer,HashMap<String,String>> getRanking(String url) throws IOException {
+    public HashMap<Integer,HashMap<String,String>> getDailyRanking(boolean useCache) throws IOException {
+        return getRanking(References.PIXIV_RANKING_DAILY,useCache);
+    }
+    public HashMap<Integer,HashMap<String,String>> getWeeklyRanking(boolean useCache) throws IOException {
+        return getRanking(References.PIXIV_RANKING_WEEKLY,useCache);
+    }
+    public HashMap<Integer,HashMap<String,String>> getMonthlyRanking(boolean useCache) throws IOException {
+        return getRanking(References.PIXIV_RANKING_MONTHLY,useCache);
+    }
+    public HashMap<Integer,HashMap<String,String>> getRanking(String url,boolean useCache) throws IOException {
         HashMap<Integer,HashMap<String,String>> result=new HashMap<>();
         String retApi;
         byte[] cacheContent;
-        if ((cacheContent=CacheFactory.getCache(url))!=null){
+        if ((cacheContent=CacheFactory.getCache(url))!=null&&useCache){
             retApi=new String(cacheContent,StandardCharsets.UTF_8);
         } else{
             retApi= new String(FileUtils.download(url,proxy), StandardCharsets.UTF_8);

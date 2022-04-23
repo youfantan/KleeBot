@@ -25,6 +25,8 @@ import net.mamoe.mirai.utils.BotConfiguration;
 import glous.kleebot.log.Logger;
 
 import java.io.*;
+import java.lang.reflect.Field;
+import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -49,6 +51,7 @@ public class KleeBot {
     public static Bot botInstance;
     public static final String ip=(getLocalhost()==null?"127.0.0.1":getLocalhost());
     public static List<Plugin> plugins=new ArrayList<>();
+    public static boolean ENBALE_DEBUG=null == null ? false : true;
     static String getLocalhost(){
         try {
 
@@ -115,6 +118,7 @@ public class KleeBot {
             System.out.println("NOT SUPPORTED SYSTEM");
             System.exit(-1);
         }
+
         Logger.init();
         logger= Logger.getLogger(KleeBot.class);
         logger.info("Logger已完成初始化");
@@ -138,8 +142,10 @@ public class KleeBot {
         Configuration configuration=new Configuration();
         KleeBot.configurationInstance=configuration;
         configuration.load(new File("kleebot.configuration"));
-        logger.debug("配置文件: "+configuration.toString());
+        System.out.println("配置文件: "+ configuration);
         config=configuration.serializeToClass(BotConfig.class);
+        //change debug status
+        KleeBot.ENBALE_DEBUG=configuration.getBoolean("EnableDebug");
         File cacheDir=new File(KleeBot.config.getCacheDir());
         if (!cacheDir.exists()){
             cacheDir.mkdir();
@@ -181,6 +187,7 @@ public class KleeBot {
             ServiceRegistry.register(GenshinAbyssService.class);
             ServiceRegistry.register(MCWikiSearchService.class);
             ServiceRegistry.register(AutoPostService.class);
+            ServiceRegistry.register(SyncService.class);
             //start to load plugins
             File pluginDir=new File("plugins");
             if (!pluginDir.exists()){
@@ -219,13 +226,14 @@ public class KleeBot {
             if (mode==1){
                 for (String service:
                         services) {
-                    configuration.setValue(service,true);
+                    configuration.setValue(service,true,"是否启用 %s 服务".formatted(service));
                 }
                 configuration.saveToFile();
                 logger.info("配置文件生成完毕，请修改配置文件以继续。");
                 System.exit(0);
             }
             ServiceRegistry.init();
+            System.out.println(Arrays.toString(ServiceRegistry.getAllEnabledService()));
             ChromeInstance.initialize();
             logger.trace("Chrome Driver初始化完成");
             Timer.init();

@@ -1,6 +1,8 @@
 package glous.kleebot.utils;
 
 
+import glous.kleebot.log.Logger;
+
 import javax.net.ssl.HttpsURLConnection;
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
@@ -18,6 +20,7 @@ public class FileUtils {
     public static void enableDebug(int port){
         DEBUG_PORT=port;
     }
+    private static final Logger logger=Logger.getLogger(FileUtils.class);
     public static byte[] readFile(String fileName) throws IOException {
         BufferedInputStream in = new BufferedInputStream(new FileInputStream(fileName));
         ByteArrayOutputStream out = new ByteArrayOutputStream();
@@ -81,6 +84,7 @@ public class FileUtils {
         writeFile(fileName, content.getBytes(StandardCharsets.UTF_8));
     }
     public static byte[] download(String _url, Proxy proxy, Map<String,String> extraHeaders) {
+        long start=System.currentTimeMillis();
         try {
             URL url = new URL(_url);
             HttpURLConnection conn;
@@ -108,11 +112,14 @@ public class FileUtils {
             }
             in.close();
             out.close();
+            long end=System.currentTimeMillis();
+            logger.debug("Total: %d ms".formatted(end-start));
             return out.toByteArray();
         } catch (Exception e){
             e.printStackTrace();
             return null;
         }
+
     }
 
     public static byte[] download(String _url) throws IOException {

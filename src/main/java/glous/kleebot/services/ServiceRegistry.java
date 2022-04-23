@@ -29,7 +29,7 @@ public class ServiceRegistry {
         }
     }
     public static String[] getAllEnabledService(){
-        return enabledServiceMap.keySet().toArray(new String[0]);
+        return enabledServiceMap.keySet().toArray(new String[enabledServiceMap.size()]);
     }
     public static String[] getAllRegisteredServices(){
         return serviceMap.keySet().toArray(new String[0]);

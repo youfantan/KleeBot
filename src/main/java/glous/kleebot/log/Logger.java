@@ -1,5 +1,7 @@
 package glous.kleebot.log;
 
+import glous.kleebot.KleeBot;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.text.SimpleDateFormat;
@@ -73,12 +75,14 @@ public class Logger {
         }
     }
     public void debug(String message){
-        String formattedMessage=getFormattedMessage("DEBUG",message);
-        System.out.print(formattedMessage);
-        try {
-            writer.write(formattedMessage);
-        } catch (IOException e) {
-            e.printStackTrace();
+        if (KleeBot.ENBALE_DEBUG){
+            String formattedMessage=getFormattedMessage("DEBUG",message);
+            System.out.print(formattedMessage);
+            try {
+                writer.write(formattedMessage);
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
     }
     public void error(String message){

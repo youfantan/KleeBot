@@ -12,3 +12,4 @@ CookieFile: cookie.dat #设置米游社Cookie文件
 ResourcePackDir: pages #设置Http静态服务资源包路径
 ResourcePackFileDir: resourcePacks #设置Http静态服务资源包释放路径
 SilentMode: true #设置是否输出群内消息
+EnableDebug : false #设置是否启用调试模式

@@ -19,9 +19,7 @@ public class Configuration {
     private static final int STATUS_COMMENT=2;
     private File configFile;
     private String configContent;
-    //Integer Key is just a list-like map impl
-    private Map<Integer,ConfigNode> configNodes;
-    private Map<String,Integer> linear_search_impl;
+    private Map<String,ConfigNode> configNodes;
     public Configuration(){
     }
     public Configuration(File file){
@@ -29,7 +27,7 @@ public class Configuration {
     }
     public String toString(){
         StringBuilder builder=new StringBuilder();
-        for (Map.Entry<Integer,ConfigNode> entry :
+        for (Map.Entry<String,ConfigNode> entry :
                 configNodes.entrySet()) {
             builder.append("Key : %s Value: %s(%s) Comment: %s\n".formatted(entry.getKey(),entry.getValue().getValue(),entry.getValue().getValue().getClass().getName(),entry.getValue().getComment()));
         }
@@ -47,7 +45,7 @@ public class Configuration {
         this.parse();
     }
 
-    public Map<Integer, ConfigNode> getConfigNodes() {
+    public Map<String, ConfigNode> getConfigNodes() {
         return configNodes;
     }
 
@@ -85,9 +83,9 @@ public class Configuration {
     }
     public String save(){
         StringBuilder builder=new StringBuilder();
-        for (Map.Entry<Integer, ConfigNode> entry :
+        for (Map.Entry<String, ConfigNode> entry :
                 configNodes.entrySet()) {
-            if (entry.getValue().getKey().equals("__SINGLE_LINE_COMMENT")&&entry.getValue().getValue().equals("__SINGLE_LINE_COMMENT"))
+            if (entry.getValue().getKey().startsWith("__SINGLE_LINE_COMMENT")&&entry.getValue().getValue().toString().startsWith("__SINGLE_LINE_COMMENT"))
                  builder.append("# ").append(entry.getValue().getComment()).append("\n");
             else
                 if (!entry.getValue().getComment().isEmpty())
@@ -101,33 +99,34 @@ public class Configuration {
         if (configFile!=null){
             FileUtils.writeFile(configFile.getAbsolutePath(),save());
         } else{
-            exception(0,0,"saveToFile() can be only used in load(java.io.File) method.");
+            exception(0,0,"saveToFile() can only be used in load(java.io.File) method.");
         }
     }
     public boolean contains(String key){
-        return getNode(key)==null;
+        return getNode(key)!=null;
     }
     public void setValue(String key,ConfigNode node){
-        int index=this.linear_search_impl.get(key);
-        this.configNodes.put(index,node);
+        this.configNodes.put(key, node);
     }
     public void setValue(String key,Object value,String comment){
-        this.setValue(key, new ConfigNode(key, value, Objects.requireNonNullElse(comment, "")));
-
+        if(key.equals("")&&value.equals("")&&!comment.equals(""))
+            this.setValue("__SINGLE_LINE_COMMENT"+comment, new ConfigNode("__SINGLE_LINE_COMMENT"+comment, "__SINGLE_LINE_COMMENT"+comment, comment));
+        else
+            this.setValue(key, new ConfigNode(key, value, comment));
     }
     public void setValue(String key,Object value){
-        this.setValue(key,value,"");
+            this.setValue(key,value,"");
     }
     public <T> T get(String key) throws IOException {
         return (T)getObject(key);
     }
     public ConfigNode getNode(String key){
-        if (this.linear_search_impl.containsKey(key)){
-            int index=this.linear_search_impl.get(key);
-            return this.configNodes.get(index);
-        } else{
-            return null;
+        for (Map.Entry<String, ConfigNode> entry:
+        this.configNodes.entrySet()){
+            if (entry.getKey().equals(key))
+                return entry.getValue();
         }
+        return null;
     }
     public String getComment(String key) throws IOException {
         ConfigNode node=getNode(key);
@@ -196,8 +195,7 @@ public class Configuration {
         char[] chars=configContent.toCharArray();
         int line=0;
         int col=0;
-        Map<Integer,ConfigNode> nodes=new LinkedHashMap<>();
-        Map<String,Integer> linear_search_impl=new LinkedHashMap<>();
+        Map<String,ConfigNode> nodes=new LinkedHashMap<>();
         String key="";
         String val="";
         String comment="";
@@ -229,14 +227,12 @@ public class Configuration {
                         }
                         if (!val.equals("")||!key.equals("")) {
                             Object oVal = getVal(val);
-                            nodes.put(serialCode,new ConfigNode(key,oVal,comment));
-                            linear_search_impl.put(key,serialCode);
+                            nodes.put(key,new ConfigNode(key,oVal,comment));
                         }
                         //judge if is a single line comment
                         if (val.equals("") && key.equals("")) {
                             //save as a single line comment
-                            nodes.put(serialCode,new SingleLineCommentNode("","",comment));
-                        }
+                            nodes.put("__SINGLE_LINE_COMMENT"+comment,new ConfigNode("__SINGLE_LINE_COMMENT"+comment,"__SINGLE_LINE_COMMENT"+comment,comment)); }
                         key="";
                         val="";
                         comment="";
@@ -259,13 +255,13 @@ public class Configuration {
                         }
                         if (!val.equals("")||!key.equals("")) {
                             Object oVal = getVal(val);
-                            nodes.put(serialCode,new ConfigNode(key,oVal,comment));
-                            linear_search_impl.put(key,serialCode);
+
+                            nodes.put(key,new ConfigNode(key,oVal,comment));
                         }
                         //judge if is a single line comment
                         if (val.equals("") && key.equals("")) {
                             //save as a single line comment
-                            nodes.put(serialCode,new SingleLineCommentNode("","",comment));
+                            nodes.put("__SINGLE_LINE_COMMENT"+comment,new ConfigNode("__SINGLE_LINE_COMMENT"+comment,"__SINGLE_LINE_COMMENT"+comment,comment));
                         }
                         key="";
                         val="";
@@ -282,7 +278,6 @@ public class Configuration {
             }
         }
         this.configNodes=nodes;
-        this.linear_search_impl=linear_search_impl;
     }
     private Object getVal(String origin) throws IOException {
         //parse val line by line

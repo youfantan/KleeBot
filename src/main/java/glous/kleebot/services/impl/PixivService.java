@@ -100,7 +100,7 @@ public class PixivService extends GroupService {
             if (serialNum>ranking.size()+1||serialNum<1){
                 return false;
             }
-            HashMap<String,String> artwork=ranking.get(serialNum+1);
+            HashMap<String,String> artwork=ranking.get(serialNum-1);
             sendRankMessage(event, artwork);
         } else{
             String illustid=method;
