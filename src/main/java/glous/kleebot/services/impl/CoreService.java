@@ -86,7 +86,6 @@ public class CoreService extends GroupService {
                     """
                             KleeBot %s
                             Web页面: http://%s/BotStatus/
-                            版本: %s
                             Github仓库: https://www.github.com/youfantan/Kleebot
                             KleeBot主页: https://kleebot.glous.xyz
                             OpenCV版本: %s
@@ -94,7 +93,7 @@ public class CoreService extends GroupService {
                             Java版本: %s
                             运行系统: %s
                             任务队列: %d 个任务正在运行
-                            """.formatted(KleeBot.GET_VERSION(),KleeBot.ip,KleeBot.GET_VERSION(),"4.5.5","4.1",System.getProperty("java.version"),System.getProperty("os.name"),names.size())
+                            """.formatted(KleeBot.GET_VERSION(),KleeBot.ip,"4.5.5","4.1",System.getProperty("java.version"),System.getProperty("os.name"),names.size())
             );
             for (int i = 0; i < names.size(); i++) {
                 builder.append("\t"+i+": "+names.get(i)+"\n");

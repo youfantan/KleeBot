@@ -10,3 +10,4 @@ native/HardwareInfo/.idea
 Base/.idea
 BotStatus/.idea
 Whisper/.idea
+src/test/

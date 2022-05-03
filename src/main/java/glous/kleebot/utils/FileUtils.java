@@ -14,6 +14,7 @@ import java.nio.charset.StandardCharsets;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
 import java.util.Map;
+import java.util.Objects;
 
 public class FileUtils {
     private static int DEBUG_PORT;
@@ -33,20 +34,25 @@ public class FileUtils {
         in.close();
         return out.toByteArray();
     }
-    public static String readStream(InputStream stream){
+    public static byte[] readBytesStream(InputStream stream){
         try {
-            BufferedReader reader=new BufferedReader(new InputStreamReader(stream));
-            String line;
-            StringBuilder builder=new StringBuilder();
-            while ((line=reader.readLine())!=null){
-                builder.append(line);
+            BufferedInputStream in=new BufferedInputStream(stream);
+            byte[] buff=new byte[1024];
+            int bytesRead;
+            ByteArrayOutputStream out=new ByteArrayOutputStream();
+            while ((bytesRead=in.read(buff))!=-1) {
+                out.write(buff, 0, bytesRead);
             }
-            reader.close();
-            return builder.toString();
+            in.close();
+            out.close();
+            return out.toByteArray();
         } catch (IOException e) {
             e.printStackTrace();
             return null;
         }
+    }
+    public static String readStreamString(InputStream stream){
+        return new String(Objects.requireNonNull(readStreamBytes(stream)),StandardCharsets.UTF_8);
     }
     public static byte[] readStreamBytes(InputStream stream){
         try {

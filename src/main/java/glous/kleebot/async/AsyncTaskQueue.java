@@ -22,7 +22,7 @@ public class AsyncTaskQueue {
         //init all working processes
         threads=new AsyncTask[size];
     }
-    public void start(){
+    public synchronized void start(){
         while (KleeBot.getRunningFlag()&&flag){
             Task task;
             if ((task=pollFirst())!=null){
@@ -36,11 +36,14 @@ public class AsyncTaskQueue {
                 }
             }
             try {
-                Thread.sleep(10);
+                this.wait();
             } catch (InterruptedException e) {
                 e.printStackTrace();
             }
         }
+    }
+    public synchronized void asyncStart(){
+        new Thread(this::start).start();
     }
     public List<String> getAllRunningTasksName(){
         List<String> taskNames=new ArrayList<>();
@@ -54,8 +57,9 @@ public class AsyncTaskQueue {
         }
         return taskNames;
     }
-    public void addTask(BaseFunction func,String funcName){
+    public synchronized void addTask(BaseFunction func,String funcName){
         taskQueue.add(new Task(func,funcName));
+        this.notify();
     }
     public void stop(){
         flag=false;

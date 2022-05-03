@@ -22,7 +22,13 @@ public class HttpTaskQueue {
                         if ((t==null||!t.isAlive())){
                             BaseFunction function;
                             if ((function=tasks.pollFirst())!=null){
-                                threads[i]=new Thread(function::execute);
+                                threads[i]=new Thread(()->{
+                                    try {
+                                        function.execute();
+                                    } catch (Exception e) {
+                                        e.printStackTrace();
+                                    }
+                                });
                                 threads[i].start();
                             }
                             break;

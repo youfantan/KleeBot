@@ -5,6 +5,7 @@ import glous.kleebot.async.AsyncTaskQueue;
 import glous.kleebot.async.Timer;
 import glous.kleebot.cache.CacheFactory;
 import glous.kleebot.commands.CommandRegistry;
+import glous.kleebot.commands.impl.BroadcastCommand;
 import glous.kleebot.commands.impl.StopCommand;
 import glous.kleebot.config.Configuration;
 import glous.kleebot.http.ChromeInstance;
@@ -25,8 +26,6 @@ import net.mamoe.mirai.utils.BotConfiguration;
 import glous.kleebot.log.Logger;
 
 import java.io.*;
-import java.lang.reflect.Field;
-import java.lang.reflect.Modifier;
 import java.net.URL;
 import java.net.URLClassLoader;
 import java.nio.charset.StandardCharsets;
@@ -70,7 +69,7 @@ public class KleeBot {
         return serverInstance;
     }
     public static String GET_VERSION(){
-        return "v0.0.1(@%s)".formatted(FileUtils.readStream(KleeBot.class.getResourceAsStream("/SIGN")));
+        return "%s(%s)\n%s".formatted(FileUtils.readStreamString(KleeBot.class.getResourceAsStream("/RELEASE")),FileUtils.readStreamString(KleeBot.class.getResourceAsStream("/SIGN")),FileUtils.readStreamString(KleeBot.class.getResourceAsStream("/BUILD")));
     }
     public static int GET_OS(){
         String OSName=System.getProperty("os.name");
@@ -188,6 +187,7 @@ public class KleeBot {
             ServiceRegistry.register(MCWikiSearchService.class);
             ServiceRegistry.register(AutoPostService.class);
             ServiceRegistry.register(SyncService.class);
+            ServiceRegistry.register(MCPingService.class);
             //start to load plugins
             File pluginDir=new File("plugins");
             if (!pluginDir.exists()){
@@ -261,6 +261,7 @@ public class KleeBot {
                 ServiceRegistry.processGroupMessage(event);
             });
             CommandRegistry.register("StopCommand",new StopCommand());
+            CommandRegistry.register("BroadcastCommand",new BroadcastCommand());
             CommandRegistry.start();
         } catch (Exception e){
             queue.stop();

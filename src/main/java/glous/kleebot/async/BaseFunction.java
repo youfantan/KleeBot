@@ -1,5 +1,5 @@
 package glous.kleebot.async;
 @FunctionalInterface
 public interface BaseFunction {
-    void execute();
+    void execute() throws Exception;
 }

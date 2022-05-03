@@ -28,9 +28,10 @@ public class PixivService extends GroupService {
     private static final Logger logger=Logger.getLogger(PixivService.class);
     private static void syncRanks(){
         try {
-            HashMap<Integer,HashMap<String,String>> daily=api.getDailyRanking();
-            HashMap<Integer,HashMap<String,String>> weekly=api.getWeeklyRanking();
-            HashMap<Integer,HashMap<String,String>> monthly=api.getMonthlyRanking();
+
+            HashMap<Integer,HashMap<String,String>> daily=api.getDailyRanking(false);
+            HashMap<Integer,HashMap<String,String>> weekly=api.getWeeklyRanking(false);
+            HashMap<Integer,HashMap<String,String>> monthly=api.getMonthlyRanking(false);
             logger.info("开始同步日榜");
             for (HashMap<String, String> artwork :
                     daily.values()) {
@@ -64,7 +65,7 @@ public class PixivService extends GroupService {
     }
     @Override
     public void initialize() {
-        Timer.registerScheduledTask(new Task(PixivService::syncRanks,this.getServiceName()+"#syncRanks"),Timer.DAY);
+        Timer.registerScheduledTask(new Task(PixivService::syncRanks,this.getServiceName()+"#syncRanks"),Timer.HOUR);
         logger.info(getServiceName()+" initialized successfully");
     }
 

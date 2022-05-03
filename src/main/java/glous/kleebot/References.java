@@ -17,4 +17,6 @@ public class References {
     public static final String WHISPER_KEY_IV="ea412a61f9cd59a4";
     public static final String WHISPER_KEY_PASSWD="e348da05aa56fe0a";
     public static final String IP_SEARCH_URL="https://pv.sohu.com/cityjson?ie=utf-8";
+    public static final String GLOUS_REVERSE_PROXY_PIXIV_IMAGE_URL="https://proxy.glous.xyz/image/";
+    public static final String GLOUS_REVERSE_PROXY_GITHUB_URL="https://proxy.glous.xyz/gh/";
 }

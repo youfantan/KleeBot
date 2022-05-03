@@ -90,7 +90,7 @@ public class PixivAPI {
             retApi=new String(cacheContent,StandardCharsets.UTF_8);
         } else{
             retApi= new String(FileUtils.download(url,proxy), StandardCharsets.UTF_8);
-            CacheFactory.storeCache(url,retApi.getBytes(StandardCharsets.UTF_8), Timer.HOUR*2);
+            CacheFactory.storeCache(url,retApi.getBytes(StandardCharsets.UTF_8), Timer.HOUR);
         }
         JsonObject object=JsonParser.parseString(retApi).getAsJsonObject();
         JsonArray array=object.get("contents").getAsJsonArray();
